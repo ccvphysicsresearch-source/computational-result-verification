@@ -1,0 +1,13 @@
+# VSCodium / VS Code
+.vscode/
+
+# GNU Octave temporary files
+*.asv
+*.bak
+
+# Octave generated data
+*.mat
+
+# Operating-system files
+.DS_Store
+Thumbs.db
