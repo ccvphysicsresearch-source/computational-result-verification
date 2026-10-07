@@ -95,12 +95,12 @@ The present repository implements the same similarity equations using a **differ
 The main program is:
 
 ```text
-code/shu1977_spectral_full.m
+code/shu1977_spectral_octave.m
 ```
 
 The independent implementation uses:
 
-* Chebyshev-Gauss-Radau spectral collocation
+* Chebyshev–Gauss–Lobatto spectral collocation
 
 * A logarithmic independent variable
 
@@ -155,13 +155,13 @@ Open GNU Octave or run the program from VSCodium.
 Change to the `code` directory:
 
 ```text
-cd papers/shu1977/code
+cd papers/1977Shu/code
 ```
 
 Then execute:
 
 ```text
-shu1977_spectral_full
+shu1977_spectral_octave
 ```
 
 The program generates the numerical results and validation output described in the accompanying result file.
@@ -169,7 +169,7 @@ The program generates the numerical results and validation output described in t
 The principal result file is:
 
 ```text
-shu1977_results_spectral_full.txt
+results/shu1977_results_spectral_full.txt
 ```
 
 ---
@@ -351,7 +351,7 @@ Again, the difference is consistent with the significant-figure precision of the
 
 The independent spectral calculation produces values that are generally slightly above the tabulated values from Shu (1977).
 
-These differences should **not** be interpreted as a failure of reproduction.
+The independent calculation agrees with the published results within the precision supported by the original tables.
 
 The original paper reports numerical values to approximately three significant figures. Consequently, the printed values necessarily contain rounding and finite numerical-resolution effects.
 
@@ -378,7 +378,7 @@ $$
 
 The Newton solver required approximately 2–4 iterations at each continuation stage.
 
-The spectral coefficients decrease to machine precision, and increasing the spectral resolution produces only changes at the level expected from the numerical convergence tolerance.
+Increasing the spectral resolution from $N=30$ to $60$ to $120$ produces only changes at the level expected from the numerical convergence tolerance, indicating stable refinement of the computed solution.
 
 No anomalous behavior was observed away from the expected numerical difficulty associated with the critical point.
 
@@ -419,19 +419,19 @@ To reproduce this validation:
 3. Open the directory:
 
    ```text
-   papers/shu1977/code
+   papers/1977Shu/code
    ```
 
 4. Run:
 
    ```text
-   shu1977_spectral_full
+   shu1977_spectral_octave
    ```
 
 5. Compare the generated results with:
 
    ```text
-   shu1977_results_spectral_full.txt
+   results/shu1977_results_spectral_full.txt
    ```
 
 The source code and numerical validation results are provided together so that the calculation can be independently inspected and rerun.
