@@ -1,13 +1,23 @@
-% SHU1977_SPECTRAL_FULL
-% Reproduce Shu (1977) ApJ 214, 488 with Chebyshev spectral collocation.
-% Single-file version with figures (Shu's Fig. 2, 3a, 3b) and a full
-% error-analysis section in the text output.
+% SHU1977_SPECTRAL_OCTAVE
+% Independent numerical reproduction of Shu (1977), ApJ 214, 488.
+% Chebyshev-Gauss-Lobatto spectral collocation with logarithmic
+% coordinate, complex-step Jacobian, regularized Newton iteration,
+% and continuation in spectral resolution and A.
 %
-% Reference: Shu, F. H. 1977, ApJ, 214, 488
+% Main driver for the cross-code validation project.
+%
+% Reference:
+% Shu, F. H. 1977, ApJ, 214, 488.
 % -------------------------------------------------------------------------
 
-    results_file = 'shu1977_results_spectral_full.txt';
+    script_dir = fileparts(mfilename('fullpath'));
+    results_file = fullfile(script_dir, '..', 'results', ...
+                        'shu1977_results_spectral_full.txt');
+
     fid = fopen(results_file, 'w');
+    if fid == -1
+       error('Could not open results file: %s', results_file);
+    end
 
     fprintf(fid, '===============================================================\n');
     fprintf(fid, 'Reproduction of Shu (1977) ApJ 214, 488\n');
