@@ -47,7 +47,7 @@ $$
 x = \frac{r}{at},
 $$
 
-where $$r$$ is radius, $$t$$ is time, and $$$A$$$ is the isothermal sound speed.
+where $r$ is radius, $t$ is time, and $A$ is the isothermal sound speed.
 
 The physical variables are written in terms of dimensionless similarity functions:
 
@@ -81,12 +81,12 @@ $$
 
 The primary numerical results considered are:
 
-1. The family of similarity solutions for different values of the asymptotic density parameter $$A$$.
-2. The reduced central/core mass $$m_0$$.
+1. The family of similarity solutions for different values of the asymptotic density parameter $A$.
+2. The reduced central/core mass $m_0$.
 3. The expansion-wave solution obtained in the limit $$
 A\rightarrow2^+
 $$.
-4. The values of $$\alpha(x)$$, $$-v(x)$$, and $$m(x)$$ for the expansion-wave solution.
+4. The values of $\alpha(x)$, $-v(x)$, and $m(x)$ for the expansion-wave solution.
 5. The behavior at the critical point $$
 x=1
 $$.
@@ -149,7 +149,7 @@ The independent implementation uses:
 
 * Continuation in spectral resolution
 
-* Continuation in the parameter $$A$$
+* Continuation in the parameter $A$
 
 The spectral resolution is increased through
 
@@ -163,7 +163,7 @@ $$
 A=2.2
 $$
 
-and proceeds toward larger values of $$A$$.
+and proceeds toward larger values of $A$.
 
 This numerical method is fundamentally different from the four-step Runge–Kutta integration used in Shu (1977).
 
@@ -225,7 +225,7 @@ are compared with the corresponding profiles reported by Shu (1977).
 
 ### 2. Reduced Core Mass
 
-The calculated values of $$$m_0$$$ are compared with the values in Shu's Table 1 over the range
+The calculated values of $m_0$ are compared with the values in Shu's Table 1 over the range
 
 $$
 2.2\leq A\leq4.0.
@@ -241,9 +241,9 @@ $$
 
 The quantities compared are:
 
-* $$\alpha(x)$$
-* $$-v(x)$$
-* $$m(x)$$
+* $\alpha(x)$
+* $-v(x)$
+* $m(x)$
 
 ### 4. Critical Point
 
@@ -281,16 +281,16 @@ The stability of the numerical solution under this refinement is used as an inde
 
 ## Computational Verification Results
 
-### Table 1: Reduced Core Mass $$$m_0$$$
+### Table 1: Reduced Core Mass $m_0$
 
-For the ten tested values of $$A$$ between 2.2 and 4.0:
+For the ten tested values of $A$ between 2.2 and 4.0:
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | $$ 1.10\times10^{-2} $$ |
-| Mean absolute error        | $$ 6.26\times10^{-3} $$ |
-| RMS error                  | $$ 7.02\times10^{-3} $$ |
-| Maximum relative error     | $$ 2.93\times10^{-3} $$ |
+| Maximum absolute error     | $1.10\times10^{-2}$ |
+| Mean absolute error        | $6.26\times10^{-3}$ |
+| RMS error                  | $7.02\times10^{-3}$ |
+| Maximum relative error     | $2.93\times10^{-3}$ |
 | Maximum relative error (%) |            **0.293%** |
 | Mean relative error (%)    |            **0.190%** |
 
@@ -306,34 +306,34 @@ For $$
 0.05\leq x\leq1
 $$:
 
-#### Density variable $$$\alpha(x)$$$
+#### Density variable $\alpha(x)$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | $$ 4.37\times10^{-2} $$ |
-| Mean absolute error        | $$ 6.67\times10^{-3} $$ |
-| RMS error                  | $$ 1.27\times10^{-2} $$ |
-| Maximum relative error     | $$ 3.80\times10^{-3} $$ |
+| Maximum absolute error     | $4.37\times10^{-2}$ |
+| Mean absolute error        | $6.67\times10^{-3}$ |
+| RMS error                  | $1.27\times10^{-2}$ |
+| Maximum relative error     | $3.80\times10^{-3}$ |
 | Maximum relative error (%) |            **0.380%** |
 
-#### Velocity $$$-v(x)$$$
+#### Velocity $-v(x)$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | $$ 4.07\times10^{-3} $$ |
-| Mean absolute error        | $$ 1.24\times10^{-3} $$ |
-| RMS error                  | $$ 1.99\times10^{-3} $$ |
-| Maximum relative error     | $$ 6.18\times10^{-3} $$ |
+| Maximum absolute error     | $4.07\times10^{-3}$ |
+| Mean absolute error        | $1.24\times10^{-3}$ |
+| RMS error                  | $1.99\times10^{-3}$ |
+| Maximum relative error     | $6.18\times10^{-3}$ |
 | Maximum relative error (%) |            **0.618%** |
 
-#### Reduced mass $$$m(x)$$$
+#### Reduced mass $m(x)$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | $$ 4.64\times10^{-3} $$ |
-| Mean absolute error        | $$ 1.47\times10^{-3} $$ |
-| RMS error                  | $$ 2.01\times10^{-3} $$ |
-| Maximum relative error     | $$ 4.42\times10^{-3} $$ |
+| Maximum absolute error     | $4.64\times10^{-3}$ |
+| Mean absolute error        | $1.47\times10^{-3}$ |
+| RMS error                  | $2.01\times10^{-3}$ |
+| Maximum relative error     | $4.42\times10^{-3}$ |
 | Maximum relative error (%) |            **0.442%** |
 
 The differences are consistent with the limited numerical precision of the values printed in the original paper.
@@ -342,9 +342,13 @@ The differences are consistent with the limited numerical precision of the value
 
 ## Critical Point Validation
 
-At the critical point $$$
+At the critical point
+
+$$
 x=1
-$$$, the independent solution gives:
+$$
+
+the independent solution gives:
 
 | Quantity      | Independent result | Shu (1977) |             Difference |
 | ------------- | -----------------: | ---------: | ---------------------: |
@@ -412,7 +416,7 @@ $$, $$
 $$, and $$
 m
 $$, respectively.
-* The critical-point conditions agree to approximately $$10^{-15}$$.
+* The critical-point conditions agree to approximately $10^{-15}$.
 * The independently computed solution is stable under spectral refinement.
 
 The small systematic offset is therefore consistent with differences in numerical method, resolution, and the limited significant figures reported in the original publication.
@@ -429,7 +433,7 @@ $$
 
 The Newton solver required approximately 2–4 iterations at each continuation stage.
 
-Increasing the spectral resolution from $$N=30$$ to $$60$$ to $$120$$ produces only changes at the level expected from the numerical convergence tolerance, indicating stable refinement of the computed solution.
+Increasing the spectral resolution from $N=30$ to $60$ to $120$ produces only changes at the level expected from the numerical convergence tolerance, indicating stable refinement of the computed solution.
 
 No anomalous behavior was observed away from the expected numerical difficulty associated with the critical point.
 
@@ -462,10 +466,12 @@ The principal quantitative results are:
 - **Expansion-wave maximum relative error in density:** 0.380%
 - **Expansion-wave maximum relative error in velocity:** 0.618%
 - **Expansion-wave maximum relative error in reduced mass:** 0.442%
-- **Critical-point agreement:** approximately $$$10^{-15}$$$
-- **Spectral convergence:** confirmed for $$$
+- **Critical-point agreement:** approximately $10^{-15}$
+- **Spectral convergence:** confirmed for
+
+$$
 N=30,60,120
-$$$
+$$
 
 The numerical discrepancies are small relative to the precision of the published tabulated
 values and do not alter the physical argument or scientific conclusion withdrawn from the
@@ -522,5 +528,4 @@ https://ui.adsabs.harvard.edu/abs/1977ApJ...214..488S/abstract
 
 Full text:
 https://ui.adsabs.harvard.edu/link_gateway/1977ApJ...214..488S/ADS_PDF
-
 
