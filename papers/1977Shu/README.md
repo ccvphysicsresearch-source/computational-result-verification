@@ -83,13 +83,9 @@ The primary numerical results considered are:
 
 1. The family of similarity solutions for different values of the asymptotic density parameter $A$.
 2. The reduced central/core mass $m_0$.
-3. The expansion-wave solution obtained in the limit $$
-A\rightarrow2^+
-$$.
+3. The expansion-wave solution obtained in the limit $A\rightarrow2^+$.
 4. The values of $\alpha(x)$, $-v(x)$, and $m(x)$ for the expansion-wave solution.
-5. The behavior at the critical point $$
-x=1
-$$.
+5. The behavior at the critical point $x=1$.
 
 The published values are taken from the numerical results and tables reported in Shu (1977).
 
@@ -97,9 +93,7 @@ The published values are taken from the numerical results and tables reported in
 
 ## Numerical Method Used in the Original Paper
 
-Shu (1977) obtains the similarity solutions numerically using an asymptotic expansion at large $$
-x
-$$, followed by numerical integration of the resulting ordinary differential equations.
+Shu (1977) obtains the similarity solutions numerically using an asymptotic expansion at large $x$, followed by numerical integration of the resulting ordinary differential equations.
 
 The paper starts the numerical integration at
 
@@ -109,9 +103,7 @@ $$
 
 using the asymptotic series and then integrating inward using a **four-step Runge–Kutta method**.
 
-For the expansion-wave solution, Shu approaches the limiting case $$
-A=2
-$$ using solutions with
+For the expansion-wave solution, Shu approaches the limiting case $A=2$ using solutions with
 
 $$
 A=2.003,\quad 2.002,\quad 2.001
@@ -302,9 +294,7 @@ This is within the precision implied by the three-significant-figure values prin
 
 ### Table 2: Expansion-Wave Solution
 
-For $$
-0.05\leq x\leq1
-$$:
+For $0.05\leq x\leq1$:
 
 #### Density variable $\alpha(x)$
 
@@ -352,15 +342,9 @@ the independent solution gives:
 
 | Quantity      | Independent result | Shu (1977) |             Difference |
 | ------------- | -----------------: | ---------: | ---------------------: |
-| $$
-\alpha(1)
-$$ |           2.000000 |   2.000000 | $$ -1.6\times10^{-15} $$ |
-| $$
--v(1)
-$$     |           0.000000 |   0.000000 | $$ -8.2\times10^{-16} $$ |
-| $$
-m(1)
-$$      |           2.000000 |   2.000000 | $$ -3.1\times10^{-15} $$ |
+| $\alpha(1)$ | 2.000000 | 2.000000 | $-1.6\times10^{-15}$ |
+| $-v(1)$ | 0.000000 | 0.000000 | $-8.2\times10^{-16}$ |
+| $m(1)$ | 2.000000 | 2.000000 | $-3.1\times10^{-15}$ |
 
 The critical-point conditions are therefore satisfied to approximately machine precision.
 
@@ -409,13 +393,7 @@ The independent calculation agrees with the published results within the precisi
 In particular:
 
 * The maximum relative error in Table 1 is **0.293%**.
-* The maximum relative errors for the expansion-wave solution are **0.380%**, **0.618%**, and **0.442%** for $$
-\alpha
-$$, $$
--v
-$$, and $$
-m
-$$, respectively.
+* The maximum relative errors for the expansion-wave solution are **0.380%**, **0.618%**, and **0.442%** for $\alpha$, $-v$, and $m$, respectively.
 * The critical-point conditions agree to approximately $10^{-15}$.
 * The independently computed solution is stable under spectral refinement.
 
