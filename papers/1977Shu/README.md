@@ -1,4 +1,4 @@
-# Numerical Cross-Validation of Shu (1977)
+﻿# Computational Verification of Shu (1977)
 
 ## Paper
 
@@ -10,7 +10,30 @@ DOI: 10.1086/155274
 * [ADS bibliographic record](https://ui.adsabs.harvard.edu/abs/1977ApJ...214..488S/abstract)
 * [ADS full-text PDF](https://ui.adsabs.harvard.edu/link_gateway/1977ApJ...214..488S/ADS_PDF)
 
-This repository contains an **independent numerical implementation and cross-code validation** of the similarity solutions presented in Shu (1977).
+This repository contains an **independent computational verification** of the similarity
+solutions presented in Shu (1977).
+
+The verification uses an independent numerical implementation, cross-code verification, and
+quantitative validation of the published results.
+
+> **Project mission:** A community-driven platform for independently verifying published scientific
+> results through computational reproduction, cross-code verification, and quantitative validation.
+
+---
+
+## Verification Summary
+
+| Criterion | Result |
+|---|---|
+| Mathematical problem | Matched |
+| Original numerical method | Four-step Runge–Kutta |
+| Independent numerical method | Chebyshev–Gauss–Lobatto spectral collocation |
+| Cross-code verification | PASS |
+| Maximum relative difference in reported comparisons | 0.618% |
+| Physical behavior | Preserved |
+| Scientific conclusion | Preserved |
+| Discrepancy impact | Negligible |
+| Overall verdict | **PASS** |
 
 ---
 
@@ -24,7 +47,7 @@ $$
 x = \frac{r}{at},
 $$
 
-where \(r\) is radius, \(t\) is time, and \(a\) is the isothermal sound speed.
+where $$r$$ is radius, $$t$$ is time, and $$$A$$$ is the isothermal sound speed.
 
 The physical variables are written in terms of dimensionless similarity functions:
 
@@ -46,7 +69,11 @@ $$
 m(x)=x^2\alpha(x)\left[x-v(x)\right].
 $$
 
-The numerical solutions for \(\alpha(x)\), \(v(x)\), and \(m(x)\) are the quantities being independently reproduced and validated here.
+The numerical solutions being independently reproduced and validated here are:
+
+$$
+\alpha(x),\qquad v(x),\qquad m(x).
+$$
 
 ---
 
@@ -54,11 +81,15 @@ The numerical solutions for \(\alpha(x)\), \(v(x)\), and \(m(x)\) are the quanti
 
 The primary numerical results considered are:
 
-1. The family of similarity solutions for different values of the asymptotic density parameter \(A\).
-2. The reduced central/core mass \(m_0\).
-3. The expansion-wave solution obtained in the limit \(A\rightarrow2^+\).
-4. The values of \(\alpha(x)\), \(-v(x)\), and \(m(x)\) for the expansion-wave solution.
-5. The behavior at the critical point \(x=1\).
+1. The family of similarity solutions for different values of the asymptotic density parameter $$A$$.
+2. The reduced central/core mass $$m_0$$.
+3. The expansion-wave solution obtained in the limit $$
+A\rightarrow2^+
+$$.
+4. The values of $$\alpha(x)$$, $$-v(x)$$, and $$m(x)$$ for the expansion-wave solution.
+5. The behavior at the critical point $$
+x=1
+$$.
 
 The published values are taken from the numerical results and tables reported in Shu (1977).
 
@@ -66,9 +97,11 @@ The published values are taken from the numerical results and tables reported in
 
 ## Numerical Method Used in the Original Paper
 
-Shu (1977) obtains the similarity solutions numerically using an asymptotic expansion at large \(x\), followed by numerical integration of the resulting ordinary differential equations.
+Shu (1977) obtains the similarity solutions numerically using an asymptotic expansion at large $$
+x
+$$, followed by numerical integration of the resulting ordinary differential equations.
 
-The paper describes starting the numerical integration at
+The paper starts the numerical integration at
 
 $$
 x=10
@@ -76,7 +109,9 @@ $$
 
 using the asymptotic series and then integrating inward using a **four-step Runge–Kutta method**.
 
-For the expansion-wave solution, Shu approaches the limiting case \(A=2\) using solutions with
+For the expansion-wave solution, Shu approaches the limiting case $$
+A=2
+$$ using solutions with
 
 $$
 A=2.003,\quad 2.002,\quad 2.001
@@ -90,7 +125,7 @@ This provides the reference numerical solution against which the independent imp
 
 ## Independent Implementation
 
-The present repository implements the same similarity equations using a **different numerical method**.
+The present repository provides a numerical solver for the same similarity equations using a **different numerical method**.
 
 The main program is:
 
@@ -114,7 +149,7 @@ The independent implementation uses:
 
 * Continuation in spectral resolution
 
-* Continuation in the parameter \(A\)
+* Continuation in the parameter $$A$$
 
 The spectral resolution is increased through
 
@@ -128,11 +163,11 @@ $$
 A=2.2
 $$
 
-and proceeds toward larger values of \(A\).
+and proceeds toward larger values of $$A$$.
 
 This numerical method is fundamentally different from the four-step Runge–Kutta integration used in Shu (1977).
 
-The purpose is therefore not merely to reproduce the same calculation with the same algorithm, but to perform an **independent cross-code numerical validation**.
+The purpose is therefore not merely to reproduce the same calculation with the same algorithm, but to perform an **independent cross-code verification**.
 
 ---
 
@@ -174,13 +209,13 @@ results/shu1977_results_spectral_full.txt
 
 ---
 
-## Validation Procedure
+## Computational Verification Procedure
 
 The independent calculation is compared with the published results in several ways.
 
 ### 1. Similarity Profiles
 
-The independently calculated profiles
+The independently calculated profiles are:
 
 $$
 \alpha(x),\qquad v(x),\qquad m(x)
@@ -190,7 +225,7 @@ are compared with the corresponding profiles reported by Shu (1977).
 
 ### 2. Reduced Core Mass
 
-The calculated values of \(m_0\) are compared with the values in Shu's Table 1 over the range
+The calculated values of $$$m_0$$$ are compared with the values in Shu's Table 1 over the range
 
 $$
 2.2\leq A\leq4.0.
@@ -206,9 +241,9 @@ $$
 
 The quantities compared are:
 
-* \(\alpha(x)\)
-* \(-v(x)\)
-* \(m(x)\)
+* $$\alpha(x)$$
+* $$-v(x)$$
+* $$m(x)$$
 
 ### 4. Critical Point
 
@@ -244,18 +279,18 @@ The stability of the numerical solution under this refinement is used as an inde
 
 ---
 
-## Validation Results
+## Computational Verification Results
 
-### Table 1: Reduced Core Mass \(m_0\)
+### Table 1: Reduced Core Mass $$$m_0$$$
 
-For the ten tested values of \(A\) between 2.2 and 4.0:
+For the ten tested values of $$A$$ between 2.2 and 4.0:
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | \(1.10\times10^{-2}\) |
-| Mean absolute error        | \(6.26\times10^{-3}\) |
-| RMS error                  | \(7.02\times10^{-3}\) |
-| Maximum relative error     | \(2.93\times10^{-3}\) |
+| Maximum absolute error     | $$ 1.10\times10^{-2} $$ |
+| Mean absolute error        | $$ 6.26\times10^{-3} $$ |
+| RMS error                  | $$ 7.02\times10^{-3} $$ |
+| Maximum relative error     | $$ 2.93\times10^{-3} $$ |
 | Maximum relative error (%) |            **0.293%** |
 | Mean relative error (%)    |            **0.190%** |
 
@@ -267,36 +302,38 @@ This is within the precision implied by the three-significant-figure values prin
 
 ### Table 2: Expansion-Wave Solution
 
-For \(0.05\leq x\leq1\):
+For $$
+0.05\leq x\leq1
+$$:
 
-#### Density variable \(\alpha(x)\)
+#### Density variable $$$\alpha(x)$$$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | \(4.37\times10^{-2}\) |
-| Mean absolute error        | \(6.67\times10^{-3}\) |
-| RMS error                  | \(1.27\times10^{-2}\) |
-| Maximum relative error     | \(3.80\times10^{-3}\) |
+| Maximum absolute error     | $$ 4.37\times10^{-2} $$ |
+| Mean absolute error        | $$ 6.67\times10^{-3} $$ |
+| RMS error                  | $$ 1.27\times10^{-2} $$ |
+| Maximum relative error     | $$ 3.80\times10^{-3} $$ |
 | Maximum relative error (%) |            **0.380%** |
 
-#### Velocity \(-v(x)\)
+#### Velocity $$$-v(x)$$$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | \(4.07\times10^{-3}\) |
-| Mean absolute error        | \(1.24\times10^{-3}\) |
-| RMS error                  | \(1.99\times10^{-3}\) |
-| Maximum relative error     | \(6.18\times10^{-3}\) |
+| Maximum absolute error     | $$ 4.07\times10^{-3} $$ |
+| Mean absolute error        | $$ 1.24\times10^{-3} $$ |
+| RMS error                  | $$ 1.99\times10^{-3} $$ |
+| Maximum relative error     | $$ 6.18\times10^{-3} $$ |
 | Maximum relative error (%) |            **0.618%** |
 
-#### Reduced mass \(m(x)\)
+#### Reduced mass $$$m(x)$$$
 
 | Error measure              |                Result |
 | -------------------------- | --------------------: |
-| Maximum absolute error     | \(4.64\times10^{-3}\) |
-| Mean absolute error        | \(1.47\times10^{-3}\) |
-| RMS error                  | \(2.01\times10^{-3}\) |
-| Maximum relative error     | \(4.42\times10^{-3}\) |
+| Maximum absolute error     | $$ 4.64\times10^{-3} $$ |
+| Mean absolute error        | $$ 1.47\times10^{-3} $$ |
+| RMS error                  | $$ 2.01\times10^{-3} $$ |
+| Maximum relative error     | $$ 4.42\times10^{-3} $$ |
 | Maximum relative error (%) |            **0.442%** |
 
 The differences are consistent with the limited numerical precision of the values printed in the original paper.
@@ -305,13 +342,21 @@ The differences are consistent with the limited numerical precision of the value
 
 ## Critical Point Validation
 
-At the critical point \(x=1\), the independent solution gives:
+At the critical point $$$
+x=1
+$$$, the independent solution gives:
 
 | Quantity      | Independent result | Shu (1977) |             Difference |
 | ------------- | -----------------: | ---------: | ---------------------: |
-| \(\alpha(1)\) |           2.000000 |   2.000000 | \(-1.6\times10^{-15}\) |
-| \(-v(1)\)     |           0.000000 |   0.000000 | \(-8.2\times10^{-16}\) |
-| \(m(1)\)      |           2.000000 |   2.000000 | \(-3.1\times10^{-15}\) |
+| $$
+\alpha(1)
+$$ |           2.000000 |   2.000000 | $$ -1.6\times10^{-15} $$ |
+| $$
+-v(1)
+$$     |           0.000000 |   0.000000 | $$ -8.2\times10^{-16} $$ |
+| $$
+m(1)
+$$      |           2.000000 |   2.000000 | $$ -3.1\times10^{-15} $$ |
 
 The critical-point conditions are therefore satisfied to approximately machine precision.
 
@@ -360,8 +405,14 @@ The independent calculation agrees with the published results within the precisi
 In particular:
 
 * The maximum relative error in Table 1 is **0.293%**.
-* The maximum relative errors for the expansion-wave solution are **0.380%**, **0.618%**, and **0.442%** for \(\alpha\), \(-v\), and \(m\), respectively.
-* The critical-point conditions agree to approximately \(10^{-15}\).
+* The maximum relative errors for the expansion-wave solution are **0.380%**, **0.618%**, and **0.442%** for $$
+\alpha
+$$, $$
+-v
+$$, and $$
+m
+$$, respectively.
+* The critical-point conditions agree to approximately $$10^{-15}$$.
 * The independently computed solution is stable under spectral refinement.
 
 The small systematic offset is therefore consistent with differences in numerical method, resolution, and the limited significant figures reported in the original publication.
@@ -378,7 +429,7 @@ $$
 
 The Newton solver required approximately 2–4 iterations at each continuation stage.
 
-Increasing the spectral resolution from $N=30$ to $60$ to $120$ produces only changes at the level expected from the numerical convergence tolerance, indicating stable refinement of the computed solution.
+Increasing the spectral resolution from $$N=30$$ to $$60$$ to $$120$$ produces only changes at the level expected from the numerical convergence tolerance, indicating stable refinement of the computed solution.
 
 No anomalous behavior was observed away from the expected numerical difficulty associated with the critical point.
 
@@ -386,25 +437,43 @@ The convergence study therefore provides an additional numerical check independe
 
 ---
 
-## Validation Verdict
+## Verification Verdict
 
-### Cross-Code Numerical Validation: PASS
+### PASS
 
-The independent Chebyshev spectral implementation reproduces the numerical similarity solutions of Shu (1977) to within the precision of the published numerical results.
+The implementation of the Chebyshev–Gauss–Lobatto spectral method reproduces the similarity solutions of Shu (1977) to within the precision supported by the published numerical results.
 
-The agreement is obtained using a numerical method fundamentally different from the four-step Runge–Kutta procedure described in the original paper.
+The agreement is obtained using a numerical method fundamentally different from the
+four-step Runge–Kutta procedure described in the original paper.
+
+| Verification criterion | Assessment |
+|---|---|
+| Numerical agreement | **PASS** |
+| Physical behavior | **PRESERVED** |
+| Scientific conclusion | **PRESERVED** |
+| Discrepancy impact | **NEGLIGIBLE** |
+| Primary discrepancy source | **Numerical method / published rounding** |
+| Overall verdict | **PASS** |
 
 The principal quantitative results are:
 
-* **Table 1 maximum relative error:** 0.293%
-* **Table 1 mean relative error:** 0.190%
-* **Expansion-wave maximum relative error in \(\alpha\):** 0.380%
-* **Expansion-wave maximum relative error in \(-v\):** 0.618%
-* **Expansion-wave maximum relative error in \(m\):** 0.442%
-* **Critical-point agreement:** approximately \(10^{-15}\)
-* **Spectral convergence:** confirmed for \(N=30,60,120\)
+- **Table 1 maximum relative error:** 0.293%
+- **Table 1 mean relative error:** 0.190%
+- **Expansion-wave maximum relative error in density:** 0.380%
+- **Expansion-wave maximum relative error in velocity:** 0.618%
+- **Expansion-wave maximum relative error in reduced mass:** 0.442%
+- **Critical-point agreement:** approximately $$$10^{-15}$$$
+- **Spectral convergence:** confirmed for $$$
+N=30,60,120
+$$$
 
-These results support the conclusion that the numerical similarity solutions reported by Shu (1977) can be independently reproduced using a different numerical approach.
+The numerical discrepancies are small relative to the precision of the published tabulated
+values and do not alter the physical argument or scientific conclusion withdrawn from the
+computed solutions.
+
+These results support the conclusion that the numerical solutions reported by
+Shu (1977) can be independently reproduced and computationally verified using a different
+numerical approach.
 
 ---
 
@@ -453,3 +522,5 @@ https://ui.adsabs.harvard.edu/abs/1977ApJ...214..488S/abstract
 
 Full text:
 https://ui.adsabs.harvard.edu/link_gateway/1977ApJ...214..488S/ADS_PDF
+
+
