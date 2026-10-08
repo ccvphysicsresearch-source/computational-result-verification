@@ -63,25 +63,25 @@ for Shu (1977) Self-Similar Collapse}
 \begin{abstract}
 This document explains the mathematical content of each source file of an
 independent Chebyshev spectral solver for the self-similar collapse
-equations of Shu (1977, \emph{ApJ} \textbf{214}, 488). The code is written
-in GNU Octave and reproduces Shu's Tables~1 and~2. The purpose of this
-document is to make the numerical implementation traceable from the
-published equations to the corresponding source-code operations. The
-Runge--Kutta integration used by Shu is replaced here by a Chebyshev
-collocation formulation followed by a nonlinear Newton solve. The
-resulting solution reproduces the tabulated values of Shu with a maximum
-relative difference of 0.293\% for Table~1 and 0.618\% for Table~2
-(Sec.~\ref{sec:validation}).
+equations of Shu (1977, \emph{ApJ} \textbf{214}, 488). The
+code is written in GNU Octave and reproduces Shu's Tables~1 and~2. The
+purpose of this document is to make the numerical implementation
+traceable from the published equations to the corresponding source-code
+operations. The Runge--Kutta integration used by Shu is replaced here by
+a Chebyshev collocation formulation followed
+by a nonlinear Newton solve. The resulting solution
+reproduces the tabulated values of Shu (1977) with a maximum relative difference
+of 0.293\% for Table~1 and 0.618\% for Table~2.
 \end{abstract}
 
 \tableofcontents
 \newpage
 
 %=======================================================================
-\section{Governing equations}
+\section{Introduction (Governing equations)}
 %=======================================================================
 
-Shu (1977) writes the similarity ansatz
+Shu (1977) \cite{shu1977} writes the similarity ansatz
 \begin{equation}
 \rho(r,t) = \frac{\alpha(x)}{4\pi G t^{2}}, \qquad
 u(r,t)    = a\,v(x), \qquad
@@ -102,7 +102,6 @@ coupled ordinary differential equations (Shu 1977, eqs.~11--12):
 }
 \label{eq:odev}
 \end{equation}
-
 \begin{equation}
 \boxed{
 \bigl[(x-v)^{2}-1\bigr]
@@ -127,12 +126,31 @@ v=x-1
 \label{eq:critcurve}
 \end{equation}
 A physical solution must cross this curve smoothly. This requires the
-right-hand sides of \eqref{eq:odev}--\eqref{eq:odea} to vanish at the
+right-hand sides of Eq. \eqref{eq:odev}-- \eqref{eq:odea} to vanish at the
 crossing point as well, so the singularity of the equations is removable
 for the physical solution.
 
+
+The present paper is organized as follows. Section~\ref{sec:numfor}
+summarizes the overall numerical strategy. Section~\ref{sec:logvars}
+introduces the logarithmic coordinate $\tau=\ln x$ and the log-density
+variable $w=\ln\alpha$ and derives the reformulated similarity
+equations. Section~\ref{sec:cheb} constructs the Chebyshev
+differentiation matrix \texttt{sc\_cheb.m}. Section~\ref{sec:residuals}
+assembles the collocation residuals for the collapse and
+expansion-wave problems.
+Sections~\ref{sec:newton}--\ref{sec:cont} describe the Newton solver,
+the complex-step Jacobian, the Tikhonov-regularized Newton step, the
+Armijo backtracking, and the continuation strategies in $N$ and $A$.
+Section~\ref{sec:traceability} provides an equation-to-code
+traceability table, and Sections~\ref{sec:driver}--\ref{sec:validation}
+present the main driver, the numerical validation, and the
+interpretation of the observed differences from Shu (1977).
+Sections~\ref{sec:summary}--\ref{sec:repro} conclude with a summary of
+the method, a source-file listing, and a reproducibility statement.
+
 %=======================================================================
-\section{Numerical formulation}
+\section{Numerical formulation}\label{sec:numfor}
 %=======================================================================
 
 The numerical procedure of Shu (1977) starts from asymptotic conditions
@@ -152,12 +170,14 @@ Runge--Kutta method. The present implementation instead follows
 \end{equation}
 
 It does not reproduce the Runge--Kutta algorithm line by line. It solves
-the same mathematical equations with a different discretization and a
-different nonlinear solution method. This difference is what makes the
-comparison a meaningful cross-check: the two sets of numerical solutions
-were obtained independently. Two changes of variables
-(Sec.~\ref{sec:logvars}) make the nonlinear boundary-value problem more
-suitable for spectral collocation.
+the same mathematical equations with a different discretization
+(Chebyshev collocation \cite{trefethen2000,boyd2001}) and a
+different nonlinear solution method (Newton's method
+\cite{dennis1996}). This difference is what makes the comparison a
+meaningful cross-check: the two sets of numerical solutions were obtained
+independently. Two changes of variables (Sec.~\ref{sec:logvars}) make the
+nonlinear boundary-value problem more suitable for spectral collocation
+\cite{boyd2001}.
 
 %=======================================================================
 \section{Logarithmic change of variables}\label{sec:logvars}
@@ -186,7 +206,9 @@ which is mapped linearly onto the Chebyshev interval $[-1,1]$. A grid in
 $\tau$ spaces its nodes by equal ratios in $x$, so each decade of $x$ is
 resolved comparably; a grid uniform in $x$ would place almost all nodes at
 large~$x$. (The Chebyshev nodes in $\tau$ additionally cluster near both
-ends of the interval.)
+ends of the interval.) The use of logarithmic coordinates to compress
+multi-decade ranges is standard in pseudospectral methods
+\cite{boyd2001}.
 
 \subsection{Log-density variable}
 
@@ -248,10 +270,14 @@ These are the equations enforced by the spectral residual functions.
 
 %=======================================================================
 \section{The Chebyshev differentiation matrix --- \texttt{sc\_cheb.m}}
+\label{sec:cheb}
 %=======================================================================
 The file \texttt{sc\_cheb.m} constructs the Chebyshev differentiation
-matrix. (The variable \texttt{x} in this listing holds the nodes $\xi_j$,
-not the similarity variable.)
+matrix. The implementation is the standard barycentric-weight construction
+of Trefethen \cite[Program~6]{trefethen2000}, reproduced here verbatim for
+self-containedness. (The variable
+\texttt{x} in this listing holds the nodes $\xi_j$, not the similarity
+variable.)
 \begin{lstlisting}[style=matlab]
 function [D, x] = sc_cheb(N)
     x = cos(pi * (0:N)' / N);
@@ -270,20 +296,20 @@ j=0,\ldots,N.
 \label{eq:cgl}
 \end{equation}
 They cluster near $\xi=\pm1$, which is useful when high accuracy is
-required near the endpoints of the computational interval. For a vector
-of nodal values $\mathbf f$, the differentiation matrix satisfies
+required near the endpoints of the computational interval
+\cite{trefethen2000,boyd2001}. For a vector of nodal values
+$\mathbf f$, the differentiation matrix satisfies
 \begin{equation}
 (D\mathbf f)_i
 \approx
 \left.\frac{df}{d\xi}\right|_{\xi_i}.
 \label{eq:Dxi}
 \end{equation}
-The implementation uses the standard barycentric-weight construction.
-The final diagonal correction makes the derivative of a constant function
-numerically zero.
+The implementation uses the standard barycentric-weight construction
+\cite[Ch.~6]{trefethen2000}. The final diagonal correction makes the
+derivative of a constant function numerically zero.
 
 \subsection{Mapping between $\xi$ and $\tau$}
-
 The computational coordinate $\tau$ is related linearly to
 $\xi\in[-1,1]$:
 \begin{equation}
@@ -318,15 +344,18 @@ is therefore the outer boundary.
 \section{The residual equations}\label{sec:residuals}
 %=======================================================================
 
-The spectral method replaces the differential equations with a
-finite-dimensional nonlinear algebraic system. Bold symbols denote
-vectors of nodal values; plain $v$, $w$ denote the functions. The unknown continuous profiles are discretized by their nodal values
+The spectral method \cite{trefethen2000,boyd2001} replaces
+the differential equations with a finite-dimensional nonlinear algebraic
+system. Bold symbols denote vectors of nodal values; plain $v$, $w$
+denote the functions. The unknown continuous profiles are discretized by
+their nodal values
 \begin{equation}
 \mathbf v=(v_0,\ldots,v_N)^T,
 \qquad
 \mathbf w=(w_0,\ldots,w_N)^T,
 \end{equation}
-where $w_j=\ln\alpha_j$. These are concatenated into a single state vector of $2(N+1)$ nodal unknowns
+where $w_j=\ln\alpha_j$. These are concatenated into a single state vector
+of $2(N+1)$ nodal unknowns
 \begin{equation}
 \mathbf u=
 \begin{bmatrix}
@@ -400,7 +429,7 @@ R_2=0.
 
 At the outer node $j=0$ ($x=x_{\max}$), the code replaces the two ODE
 residuals by the asymptotic boundary conditions, Eq.~(19) of
-Shu (1977):
+Shu (1977) \cite{shu1977}:
 \begin{lstlisting}[style=matlab]
 alpha_inf = A/x_max^2 - A*(A-2)/(2*x_max^4);
 v_inf     = -(A-2)/x_max - (1-A/6)*(A-2)/x_max^3;
@@ -440,10 +469,10 @@ boundary.
 
 For $A=2$ the outer asymptote~\eqref{eq:asyminf} reduces to the static
 singular isothermal sphere $\alpha=2/x^2$, $v=0$. The expansion-wave
-solution is the limiting case $A\rightarrow2^+$ of the collapse family.
-Its outer boundary is the critical point $x=1$, and the solution is
-computed on $x_{\min}\le x\le1$ with $x_{\min}=10^{-3}$. The boundary
-conditions at the outer node are
+solution is the limiting case $A\rightarrow2^+$ of the collapse family
+\cite{shu1977}. Its outer boundary is the critical point $x=1$, and the
+solution is computed on $x_{\min}\le x\le1$ with $x_{\min}=10^{-3}$. The
+boundary conditions at the outer node are
 \begin{lstlisting}[style=matlab]
 R1(1) = v(1);
 R2(1) = w(1) - log(2);
@@ -461,6 +490,7 @@ problem, no condition is imposed at $x_{\min}$.
 
 %=======================================================================
 \section{The Newton solver --- \texttt{sc\_newton\_cs.m}}
+\label{sec:newton}
 %=======================================================================
 
 After collocation, the differential equations and boundary conditions
@@ -469,7 +499,8 @@ form a nonlinear algebraic system
 \mathbf R(\mathbf u)=\mathbf 0,
 \end{equation}
 where $\mathbf u$ is defined in Eq.~\eqref{eq:statevector}. The file
-\texttt{sc\_newton\_cs.m} solves this system.
+\texttt{sc\_newton\_cs.m} solves this system using a damped Newton
+iteration \cite{dennis1996}.
 
 %=======================================================================
 \subsection{Complex-step Jacobian}
@@ -479,8 +510,8 @@ The Jacobian
 \begin{equation}
 J=\frac{\partial\mathbf R}{\partial\mathbf u}
 \end{equation}
-is evaluated with the complex-step method. For a residual function that
-is analytic in its arguments,
+is evaluated with the complex-step method \cite{squire1998}.
+For a residual function that is analytic in its arguments,
 \begin{equation}
 \frac{\partial R_i}{\partial u_j}
 \approx
@@ -503,8 +534,8 @@ end
 \end{lstlisting}
 The complex-step method involves no subtraction of nearly equal numbers,
 so it avoids the cancellation error that limits ordinary finite
-differences and yields Jacobians accurate to near machine precision. The
-Jacobian has dimension
+differences and yields Jacobians accurate to near machine precision
+\cite{squire1998}. The Jacobian has dimension
 \begin{equation}
 2(N+1)\times2(N+1).
 \end{equation}
@@ -543,7 +574,7 @@ small.)
 %=======================================================================
 
 The Newton correction is obtained from the regularized least-squares
-problem
+problem \cite{tikhonov1963}
 \begin{equation}
 \min_{\delta\mathbf u}
 \left\|
@@ -576,20 +607,20 @@ du = -[Js; sqrt(eps_reg)*eye(n)] ...
        \ [Rs; zeros(n,1)];
 \end{lstlisting}
 This avoids forming the normal equations
-$J_s^{T}J_s+\epsilon I_n$, which would generally worsen conditioning.
-The regularization parameter is $\epsilon=10^{-10}$. It does not change
-the target equations; it only stabilizes the linear solve when the
-Jacobian is poorly conditioned, as can happen near the critical curve.
-When the Jacobian is well conditioned, the step approaches the ordinary
-Newton correction.
+$J_s^{T}J_s+\epsilon I_n$, which would generally worsen conditioning
+\cite{golub2013}. The regularization parameter is $\epsilon=10^{-10}$. It
+does not change the target equations; it only stabilizes the linear solve
+when the Jacobian is poorly conditioned, as can happen near the critical
+curve. When the Jacobian is well conditioned, the step approaches the
+ordinary Newton correction.
 
 %=======================================================================
 \subsection{Backtracking line search}
 %=======================================================================
 
-The Newton correction is damped by a backtracking line search. Starting
-from $\lambda=1$, the code halves the step (at most 30 times) until the
-residual satisfies
+The Newton correction is damped by a backtracking line search
+\cite{armijo1966}. Starting from $\lambda=1$, the code halves
+the step (at most 30 times) until the residual satisfies
 \begin{lstlisting}[style=matlab]
 lam = 1;
 for k = 1:30
@@ -612,7 +643,7 @@ c=10^{-4}.
 \label{eq:armijo}
 \end{equation}
 The line search prevents a large Newton step from leaving the basin of
-convergence.
+convergence \cite{armijo1966}.
 
 %=======================================================================
 \subsection{Convergence criterion}
@@ -637,10 +668,13 @@ Sec.~\ref{sec:validation}.
 
 %=======================================================================
 \section{Grid refinement and continuation}
+\label{sec:cont}
 %=======================================================================
 
 The solver refines the grid in the polynomial degree $N$ and uses
-continuation in the parameter $A$.
+continuation in the parameter $A$. Continuation in a parameter and in the
+grid resolution is a standard technique for extending the convergence
+basin of a Newton iteration \cite{dennis1996,allgower1990}.
 
 %=======================================================================
 \subsection{Grid refinement in $N$}\label{sec:contN}
@@ -664,7 +698,7 @@ every polynomial degree. Because the loop over $N$ is embedded inside
 \texttt{sc\_solve\_collapse}, the sequence $N=30\to60\to120$ is repeated
 for every value of $A$. Each Newton solve typically requires only a
 small number of iterations at each stage, since the initial guess is
-already close to the converged solution.
+already close to the converged solution \cite{trefethen2000}.
 
 %=======================================================================
 \subsection{Continuation in $A$}\label{sec:contA}
@@ -683,7 +717,7 @@ u  = [v0(:); log(a0(:))];
 \end{lstlisting}
 (\texttt{a0} is the interpolated density $\alpha$, not the sound speed
 $a$.) This keeps successive nonlinear problems close to one another and
-makes the solutions for larger $A$ easier to obtain.
+makes the solutions for larger $A$ easier to obtain \cite{allgower1990}.
 
 %=======================================================================
 \subsection{Initial guess}
@@ -747,6 +781,7 @@ the logarithm is then taken to form the initial $w$.
 
 %=======================================================================
 \section{Equation-to-code traceability}
+\label{sec:traceability}
 %=======================================================================
 
 Table~\ref{tab:traceability} maps each mathematical object to the code
@@ -784,7 +819,7 @@ reconstructed inside the residual functions.
 Chebyshev--Gauss--Lobatto nodes
 & \eqref{eq:cgl}
 &
-\texttt{sc\_cheb.m}
+\texttt{sc\_cheb.m} \cite{trefethen2000}
 \\
 
 Derivative $d/d\xi$
@@ -834,7 +869,8 @@ Nodal values passed to \texttt{sc\_newton\_cs.m}.
 Jacobian $J=\partial\mathbf R/\partial\mathbf u$
 & \eqref{eq:complexstep}
 &
-Complex-step differentiation in \texttt{sc\_newton\_cs.m}.
+Complex-step differentiation \cite{squire1998}
+in \texttt{sc\_newton\_cs.m}.
 \\
 
 Scaled Newton system
@@ -846,13 +882,15 @@ Row scaling in \texttt{sc\_newton\_cs.m}.
 Regularized Newton correction
 & \eqref{eq:tikhonov}, \eqref{eq:augmented}
 &
-Tikhonov-regularized least-squares solve in \texttt{sc\_newton\_cs.m}.
+Tikhonov-regularized least-squares solve \cite{tikhonov1963}
+in \texttt{sc\_newton\_cs.m}.
 \\
 
 Backtracking
 & \eqref{eq:armijo}
 &
-Damped Newton update in \texttt{sc\_newton\_cs.m}.
+Damped Newton update \cite{armijo1966} in
+\texttt{sc\_newton\_cs.m}.
 \\
 
 Grid refinement in $N$
@@ -864,7 +902,7 @@ Grid refinement in $N$
 Continuation in $A$
 & Sec.~\ref{sec:contA}
 &
-\texttt{sc\_solve\_collapse.m}
+\texttt{sc\_solve\_collapse.m}.
 \\
 
 Mass relation $m=x^2\alpha(x-v)$
@@ -876,13 +914,13 @@ Mass relation $m=x^2\alpha(x-v)$
 Comparison with Shu's Table~1
 & \eqref{eq:m0numerical}
 &
-\texttt{shu1977\_spectral\_octave.m}
+\texttt{shu1977\_spectral\_octave.m}.
 \\
 
 Comparison with Shu's Table~2
 & ---
 &
-\texttt{shu1977\_spectral\_octave.m}
+\texttt{shu1977\_spectral\_octave.m}.
 \\
 
 Validation and error analysis
@@ -901,11 +939,12 @@ through to the numerical operation that evaluates it.
 
 %=======================================================================
 \section{The main driver --- \texttt{shu1977\_spectral\_octave.m}}
+\label{sec:driver}
 %=======================================================================
 
 The main driver \texttt{shu1977\_spectral\_octave.m} connects the solver
-components and compares the results with Shu (1977). It performs three
-tasks:
+components and compares the results with Shu (1977) \cite{shu1977}. It
+performs three tasks:
 
 \begin{enumerate}
 
@@ -963,9 +1002,9 @@ reconstruction utility.
 %=======================================================================
 
 The test is whether the spectral solution reproduces the values
-published by Shu (1977). For $m_0$ in Shu's Table~1, the maximum
-relative difference is 0.293\% (at $A=2.20$). For Shu's Table~2, the
-maximum relative differences are
+published by Shu (1977) \cite{shu1977}. For $m_0$ in Shu's Table~1, the
+maximum relative difference is 0.293\% (at $A=2.20$). For Shu's Table~2,
+the maximum relative differences are
 \[
 0.380\% \ \text{for }\alpha,
 \qquad
@@ -976,7 +1015,8 @@ maximum relative differences are
 at $x=0.20$, $x=0.95$, and $x=0.25$ respectively.
 The critical-point values $v(x{=}1)=0$ and $\alpha(x{=}1)=2$ are imposed
 as boundary conditions~\eqref{eq:criticalBC}, and $m(x{=}1)=2$ follows
-from Eq.~\eqref{eq:mass}; they are therefore not part of the validation. The observed differences can be understood as follows.
+from Eq.~\eqref{eq:mass}; they are therefore not part of the validation.
+The observed differences can be understood as follows.
 
 \begin{itemize}
 \item The maximum relative difference in Table~1, 0.293\% at
@@ -1005,6 +1045,7 @@ from Eq.~\eqref{eq:mass}; they are therefore not part of the validation. The obs
 
 %=======================================================================
 \section{Summary of the method}
+\label{sec:summary}
 %=======================================================================
 
 The numerical procedure can be summarized as follows:
@@ -1035,8 +1076,8 @@ Table~\ref{tab:methods} contrasts this procedure with that of Shu (1977).
 \midrule
 Formulation & ODEs in $x$, $v$, $\alpha$ & ODEs in $\tau=\ln x$, $v$, $w=\ln\alpha$ \\
 Initialization & Asymptotic expansions & Analytic blend of limiting forms \\
-Discretization & Four-step Runge--Kutta integration & Chebyshev collocation \\
-Nonlinear solver & --- (integration of an initial-value problem) & Complex-step-Jacobian Newton iteration \\
+Discretization & Four-step Runge--Kutta integration & Chebyshev collocation \cite{trefethen2000} \\
+Nonlinear solver & --- (integration of an initial-value problem) & Complex-step-Jacobian Newton iteration \cite{dennis1996,squire1998} \\
 \bottomrule
 \end{tabular}
 \caption{Methodological differences between Shu (1977) and the present
@@ -1059,7 +1100,8 @@ calculation.}
 \texttt{sc\_cheb.m}
 &
 Constructs the Chebyshev--Gauss--Lobatto nodes and differentiation
-matrix $D$.
+matrix $D$; the implementation follows Trefethen
+\cite[Program~6]{trefethen2000}.
 \\
 
 \texttt{sc\_res\_collapse.m}
@@ -1077,8 +1119,10 @@ $\alpha(x{=}1)=2$.
 
 \texttt{sc\_newton\_cs.m}
 &
-Computes the complex-step Jacobian and solves the nonlinear collocation
-system using scaled, regularized Newton steps with backtracking.
+Computes the complex-step Jacobian \cite{squire1998} and
+solves the nonlinear collocation system using scaled,
+Tikhonov-regularized Newton steps \cite{tikhonov1963} with
+Armijo backtracking \cite{armijo1966}.
 \\
 
 \texttt{sc\_solve\_collapse.m}
@@ -1107,6 +1151,7 @@ analysis, and output generation.
 
 %=======================================================================
 \section{Reproducibility statement}
+\label{sec:repro}
 %=======================================================================
 
 The calculation can be repeated with the following information.
@@ -1129,5 +1174,61 @@ The calculation can be repeated with the following information.
       expansion-wave case) completes in a few seconds on a standard
       desktop machine.
 \end{itemize}
+
+%=======================================================================
+\begin{thebibliography}{99}
+
+\bibitem{shu1977}
+Shu, F.~H.\ 1977, \emph{The Astrophysical Journal}, \textbf{214},
+488--497.
+``Self-similar collapse of isothermal spheres and star formation.''
+
+\bibitem{trefethen2000}
+Trefethen, L.~N.\ 2000, \emph{Spectral Methods in MATLAB},
+Software, Environments, and Tools, vol.~10 (Philadelphia: SIAM).
+The Chebyshev differentiation matrix \texttt{sc\_cheb.m} used in this
+work is based on Program~6 of this book.
+
+\bibitem{boyd2001}
+Boyd, J.~P.\ 2001, \emph{Chebyshev and Fourier Spectral Methods},
+2nd ed.\ (Mineola, NY: Dover Publications).
+
+
+\bibitem{dennis1996}
+Dennis, J.~E., Jr., \& Schnabel, R.~B.\ 1996,
+\emph{Numerical Methods for Unconstrained Optimization and Nonlinear
+Equations}, Classics in Applied Mathematics, vol.~16
+(Philadelphia: SIAM).
+
+\bibitem{squire1998}
+Squire, W., \& Trapp, G.\ 1998,
+``Using complex variables to estimate derivatives of real functions,''
+\emph{SIAM Review}, \textbf{40}(1), 110--112.
+
+\bibitem{tikhonov1963}
+Tikhonov, A.~N.\ 1963,
+``Solution of incorrectly formulated problems and the regularization
+method,''
+\emph{Soviet Mathematics Doklady}, \textbf{4}, 1035--1038.
+
+\bibitem{golub2013}
+Golub, G.~H., \& Van Loan, C.~F.\ 2013,
+\emph{Matrix Computations}, 4th ed.\
+(Baltimore: Johns Hopkins University Press).
+
+\bibitem{armijo1966}
+Armijo, L.\ 1966,
+``Minimization of functions having Lipschitz continuous first partial
+derivatives,''
+\emph{Pacific Journal of Mathematics}, \textbf{16}(1), 1--3.
+
+\bibitem{allgower1990}
+Allgower, E.~L., \& Georg, K.\ 1990,
+\emph{Numerical Continuation Methods: An Introduction},
+Springer Series in Computational Mathematics, vol.~13
+(Berlin: Springer-Verlag).
+
+
+\end{thebibliography}
 
 \end{document}
