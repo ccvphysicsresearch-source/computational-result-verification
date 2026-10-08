@@ -129,11 +129,7 @@ The independent implementation uses:
 
 * Chebyshev–Gauss–Lobatto spectral collocation
 
-* A logarithmic independent variable
-
-  $$
-  t=\ln x
-  $$
+* A logarithmic independent variable $t=\ln x$
 
 * Complex-step numerical Jacobians
 
