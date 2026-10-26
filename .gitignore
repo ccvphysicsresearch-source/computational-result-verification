@@ -11,3 +11,15 @@
 # Operating-system files
 .DS_Store
 Thumbs.db
+
+# MkDocs generated website
+/site/
+
+# Documentation backups
+docs/*.backup
+mkdocs.yml.backup
+
+# Temporary scientific-code backups
+papers/1977Shu/code/backup_*/
+papers/1977Shu/code/*.before_roundoff
+papers/1977Shu/code/*.diagbak
