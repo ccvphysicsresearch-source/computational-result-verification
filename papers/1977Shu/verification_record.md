@@ -1,13 +1,21 @@
 # Computational Verification Record: Shu (1977)
 
+**Record status:** Draft — evidence audit in progress
+**Record ID:** CVR-1977-Shu-001
+**Record version:** 0.2
+**Date created:** 2026-10-10
+**Date last updated:** 2026-10-26
+**Contributors:** Unknown; contributor attribution required before publication.
+**Reviewers:** Not yet independently reviewed.
+
 ## 1. Record Identity
 
 - **Record ID:** CVR-1977-Shu-001
-- **Record status:** Draft
-- **Record version:** 0.1
+- **Record status:** Draft — evidence audit in progress
+- **Record version:** 0.2
 - **Date created:** 2026-10-10
-- **Date last updated:** 2026-10-10
-- **Contributors:** Unknown; contributor attribution should be completed before publication.
+- **Date last updated:** 2026-10-26
+- **Contributors:** Unknown; attribution must be completed before publication.
 - **Reviewers:** Not yet reviewed.
 
 ## 2. Publication Identity
@@ -15,143 +23,244 @@
 - **Paper title:** Self-Similar Collapse of Isothermal Spheres and Star Formation
 - **Authors:** Frank H. Shu
 - **Publication year:** 1977
-- **Journal or venue:** The Astrophysical Journal, 214, 488–497
-- **DOI:** 10.1086/155274
-- **Stable publication URL:** https://ui.adsabs.harvard.edu/abs/1977ApJ...214..488S/abstract
+- **Journal or venue:** *The Astrophysical Journal*, 214, 488–497
+- **DOI:** [10.1086/155274](https://doi.org/10.1086/155274)
+- **Stable publication URL:** [NASA Astrophysics Data System](https://ui.adsabs.harvard.edu/abs/1977ApJ...214..488S/abstract)
 - **Published code or data URL:** Not reported in the project evidence examined so far.
-- **Published numerical results being examined:** The similarity solution for isothermal spherical collapse, including the expansion-wave solution and the dimensionless mass-accretion parameter \(m_0(A)\) for the family of solutions.
+- **Published numerical results examined:** The similarity solutions for isothermal spherical collapse, with the primary quantitative test focused on the dimensionless mass parameter for \(A=2.4\). Shu's Table 1 reports a mass value of approximately \(1.88\) at the printed precision for this case.
+
+This record does not claim to reproduce every solution family, profile, table, or scientific result in the publication.
 
 ## 3. Scientific Problem
 
 - **Scientific field:** Astrophysics; star formation and self-similar gravitational collapse.
-- **Research question:** Can the published similarity solutions and associated dimensionless quantities be reproduced using an independently formulated numerical method?
+- **Research question:** To what extent can selected numerical results from Shu (1977) be reproduced and cross-checked using documented numerical implementations?
 - **Physical or mathematical model:** Spherically symmetric, isothermal gas dynamics under self-gravity, expressed in similarity variables.
-- **Governing equations:** The similarity relations and differential equations documented in `papers/1977Shu/mathematical_explanation.tex`. The dimensional relations include
+- **Similarity variables:**
+
   \[
-  \rho(r,t)=\frac{\alpha(x)}{4\pi Gt^2},\qquad
-  u(r,t)=av(x),\qquad
-  M(r,t)=\frac{a^3t}{G}m(x),\qquad
-  x=\frac{r}{at}.
+  x=\frac{r}{at},\qquad
+  \rho(r,t)=\frac{\alpha(x)}{4\pi Gt^2},
+  \qquad u(r,t)=av(x).
   \]
-  The mass relation is
+
+  The dimensionless enclosed mass is
+
   \[
-  m=x^2\alpha(x)(x-v).
+  m(x)=x^2\alpha(x)(x-v(x)).
   \]
-  The differential equations and their derivation should be checked against the cited paper and the mathematical documentation before this record is finalized.
-- **Initial conditions:** Asymptotic starting conditions at \(x=10\) are documented for the original integration procedure. Exact coefficients and implementation details should be cited from the paper or supporting documentation.
-- **Boundary conditions:** For the expansion-wave solution, the documented critical-point conditions are \(v(1)=0\) and \(\alpha(1)=2\). Other boundary and asymptotic conditions must be recorded separately for each solution family.
-- **Model assumptions and limitations:** Isothermal equation of state, spherical symmetry, and the similarity formulation. Additional assumptions and the limits of applicability should be confirmed against the publication.
+
+- **Governing equations:** Define \(w=x-v\) and \(D=w^2-1\). The implemented equations are
+
+  \[
+  xD\frac{dv}{dx}=(\alpha wx-2)w,
+  \]
+
+  \[
+  xD\frac{d\alpha}{dx}=\alpha(\alpha x-2w)w.
+  \]
+
+  Their equivalence to the equations in Shu (1977), including the treatment of the critical point, must be checked against the original publication and the project's mathematical documentation before final approval.
+- **Initial conditions:** The RK4 and RK45 test case uses asymptotic starting conditions at \(x=10\). Exact coefficients should be checked against the implementation and the original paper. The Taylor-series method has its own documented local initialization; its exact settings must be linked to the corresponding test evidence.
+- **Boundary and critical-point conditions:** For the expansion-wave solution, the documented conditions include \(v(1)=0\) and \(\alpha(1)=2\). This record does not claim that the local Taylor test alone verifies the complete expansion-wave solution.
+- **Model assumptions and limitations:** Isothermal equation of state, spherical symmetry, and the similarity formulation. The physical assumptions and their applicability must be assessed against the publication.
 
 ## 4. Original Numerical Method
 
-- **Method described in the publication:** Four-step Runge–Kutta integration is documented in the reproduction notes.
-- **Discretization or approximation:** Ordinary differential equations are integrated from asymptotic starting conditions; the expansion-wave limit is examined through extrapolation using \(A=2.003,\ 2.002,\ 2.001\), according to the reproduction notes.
-- **Time-stepping or iteration procedure:** Spatial integration in the similarity coordinate; the detailed step-size policy requires confirmation from the paper or original documentation.
-- **Convergence criteria:** Not yet fully established from the publication.
-- **Implementation language and software:** Original implementation language and software are unknown from the evidence currently recorded.
-- **Method details unavailable in the publication:** To be determined by a systematic comparison with the full paper and any supplementary material.
+- **Method described in the publication:** Runge–Kutta integration is described in the reproduction notes. The precise original implementation details must be checked against the full paper.
+- **Discretization or approximation:** Integration of the similarity ordinary differential equations from asymptotic starting conditions.
+- **Time-stepping or iteration procedure:** The detailed original step-size policy is Unknown unless established from the publication or other authoritative documentation.
+- **Convergence criteria:** The original numerical stopping and error criteria are Not reported in the evidence currently assembled.
+- **Implementation language and software used by the original authors:** Unknown.
+- **Method details unavailable or not yet established:** Exact original solver settings, complete initialization coefficients, central-mass extraction procedure, and any undocumented implementation choices.
+
+The reproduction implementations are not assumed to duplicate every detail of Shu's original computation.
 
 ## 5. Independent Numerical Formulation
 
-- **Independent method:** Chebyshev–Gauss–Lobatto spectral collocation in \(t=\ln x\), using \(w=\ln\alpha\), with a nonlinear residual solved by a regularized Newton method.
-- **Reason for choosing this method:** To provide a numerical formulation distinct from direct fixed-step Runge–Kutta integration and to assess agreement under grid refinement.
-- **Mathematical formulation:** The similarity equations are transformed into a nonlinear collocation system. The implementation and transformations are documented in `papers/1977Shu/mathematical_explanation.tex`.
-- **Discretization or approximation:** Chebyshev–Gauss–Lobatto collocation, with continuation through \(N=30,\ 60,\ 120\) collocation points.
-- **Initial and boundary conditions used:** The implementation uses the documented solution-specific conditions. For the expansion-wave solution, \(v(1)=0\) and \(\alpha(1)=2\) are enforced.
-- **Treatment of singularities, critical points, or other numerical difficulties:** The critical point satisfies \((x-v)^2=1\). The spectral solver uses a logarithmic coordinate and log-density representation; details of the critical-point treatment must be checked in the code and mathematical documentation.
-- **Expected sources of numerical error:** Collocation truncation, nonlinear-solver tolerance, regularization, domain truncation, boundary-condition implementation, and reference-value rounding.
-- **Differences from the original formulation:** Spectral collocation and nonlinear residual solution are used instead of direct four-step Runge–Kutta integration. The extent of independence should be evaluated alongside shared equations, assumptions, and boundary conditions.
+The current benchmark uses three numerical approaches.
+
+### 5.1 Fixed-step RK4
+
+- **Method:** Classical fourth-order Runge–Kutta integration.
+- **Purpose:** Compute the similarity profiles and mass for the selected \(A=2.4\) test case.
+- **Recorded interval:** \(x=10\) inward to \(x=10^{-3}\).
+- **Recorded step size:** \(h=10^{-5}\).
+- **Recorded mass:** \(m_0=1.885209332164\).
+- **Recorded profile size:** 999,901 points.
+- **Principal limitation:** RK4 shares the governing-equation implementation and initialization assumptions with RK45. Agreement between the two does not independently validate those shared choices.
+
+### 5.2 Adaptive RK45 using ODE45
+
+- **Method:** Adaptive Runge–Kutta integration using GNU Octave's `ode45`.
+- **Purpose:** Cross-check the fixed-step RK4 calculation and compare the resulting profiles.
+- **Recorded interval:** \(x=10\) inward to \(x=10^{-3}\).
+- **Relative tolerance:** \(10^{-11}\).
+- **Absolute tolerance:** \(10^{-13}\).
+- **Maximum step:** \(0.005\).
+- **Recorded mass:** \(m_0=1.885209332537\).
+- **Recorded profile size:** 9,269 points.
+- **Principal limitation:** The RK45 implementation uses the same governing equations and right-hand-side implementation as RK4. Their agreement is a numerical integration cross-check, not a fully independent validation of the mathematical formulation.
+
+### 5.3 Higher-order Taylor-series integration
+
+- **Method:** Higher-order Taylor-series integration using the project's Taylor coefficient, critical-point, and marching routines.
+- **Purpose:** Provide an additional numerical approach that does not use Runge–Kutta stepping or global spectral collocation.
+- **Recorded local test interval:** \(x=2\) to \(x=1.5\).
+- **Recorded comparison:** Taylor-series integration against ODE45.
+- **Recorded maximum scaled differences:**
+  - \(v\): \(3.585\times10^{-14}\).
+  - \(\alpha\): \(5.909\times10^{-14}\).
+  - \(m\): \(1.095\times10^{-13}\).
+- **Recorded Taylor order:** \(K=16\) for the cited local comparison.
+- **ODE45 tolerances recorded for that comparison:** Relative tolerance \(10^{-12}\), absolute tolerance \(10^{-14}\).
+- **Remaining documentation requirement:** Link the exact test script, Taylor marching settings, initialization, output, and comparison procedure.
+- **Principal limitation:** The local comparison does not establish a global error bound or verify the complete collapse solution.
+
+### 5.4 Scope exclusion
+
+Chebyshev spectral collocation was explored during development but is excluded from the primary verification results and verdict. Its historical code and diagnostic artifacts are retained as exploratory work. Their results are not used as evidence for the conclusions of this record.
 
 ## 6. Implementation
 
-- **Repository URL:** https://github.com/ccvphysicsresearch-source/computational-result-verification
-- **Source-code path:** `papers/1977Shu/`; the exact paths of all solver and helper files should be confirmed against the current repository tree.
-- **Programming language and version:** GNU Octave 10.3.0.
-- **Dependencies and versions:** GNU Octave; additional dependencies should be confirmed from the source files and execution environment.
-- **Operating system or execution environment:** Windows development environment is reported; the precise execution environment for each validation run should be recorded.
-- **Execution instructions:** To be completed with the exact command used to run the solver from a clean checkout.
-- **Input data:** Solver parameters, collocation resolutions, and solution-specific boundary conditions; exact inputs should be recorded with the execution command.
-- **Output data:** `results/shu1977_results_spectral_full.txt` is the documented results-file path; verify that this file is present in the current repository.
-- **Reproducible command or workflow:** Unknown until confirmed from the current source tree and a fresh execution.
-- **Code revision or commit identifier:** Record the exact commit used for the validation run before finalizing.
+- **Repository URL:** [Computational Result Verification](https://github.com/ccvphysicsresearch-source/computational-result-verification)
+- **Relevant source directory:** `papers/1977Shu/code/`
+- **Recorded RK4 source:** `papers/1977Shu/code/shu1977_rk4.m`
+- **Recorded RK45 source:** `papers/1977Shu/code/shu1977_rk45.m`
+- **Recorded shared ODE implementation:** `papers/1977Shu/code/shu_odes.m`
+- **Taylor-series source files:** `shu_tay_coeffs.m`, `shu_tay_crit.m`, and `shu_tay_march.m`; exact repository paths and revision identifiers must be confirmed.
+- **Profile-writing helper:** `sc_write_profile.m`; its role in the relevant Taylor workflow must be confirmed before attributing outputs to it.
+- **Programming language and version:** GNU Octave is used for the recorded numerical implementations. The exact Octave version for each result must be confirmed from execution logs.
+- **Operating system:** Windows development environment reported. Exact run environment must be recorded.
+- **Dependencies and versions:** GNU Octave and any required packages; the complete dependency list remains to be verified.
+- **Execution instructions:** Exact commands must be recorded and tested from the intended repository state.
+- **Input data:** Parameter \(A\), starting and ending coordinates, initial conditions, step size or tolerances, and method-specific settings.
+- **Output data:** RK4/RK45 comparison evidence includes `papers/1977Shu/results/rk4_rk45_crosscheck_A2.4.txt`. The exact current locations of Taylor test outputs and raw comparison data must be confirmed.
+- **Reproducible workflow:** Not yet fully established for a clean checkout.
+- **Code revision:** Record the exact Git commit hash used for each final validation run.
+
+Historical exploratory files should be preserved. Their presence alone does not establish that they were used in the primary calculations.
 
 ## 7. Mathematical and Code Provenance
 
-- **Equations and methods taken from the publication:** Similarity relations, governing similarity equations, and published reference quantities attributed to Shu (1977).
-- **External algorithms, references, or software used:** Chebyshev spectral collocation and nonlinear least-squares/Newton techniques; exact algorithm references and software details should be listed in the mathematical documentation.
-- **Original implementation components:** Unknown; no original author code has been established in the evidence recorded here.
-- **Adapted or reused code:** To be checked by inspecting the source files and their license notices.
-- **AI-assisted development disclosure, where applicable:** AI-assisted development was used in preparing the reproduction, according to the project documentation. The final record should link to the exact disclosure and distinguish assistance from human verification.
-- **Licensing and attribution:** Verify the repository license, source-file notices, and the licensing status of any reused material before publication.
-- **Equation-to-code traceability:** See `papers/1977Shu/mathematical_explanation.tex`; add precise source-file and function references before finalization.
+- **Equations attributed to the publication:** Similarity variables, governing similarity equations, critical-point conditions, and published numerical quantities.
+- **Mathematical documentation:** `papers/1977Shu/mathematical_explanation.tex` is identified in earlier project notes; its current existence and contents must be checked before it is cited as authoritative evidence.
+- **External algorithms and software:** Classical RK4, GNU Octave `ode45`, and higher-order Taylor-series integration. Exact algorithm references and implementation details should be added where relevant.
+- **Original author code:** Unknown; no original implementation has been established in the current record.
+- **Adapted or reused code:** Must be determined by source inspection and license review.
+- **AI-assisted development disclosure:** AI-assisted development was used during preparation of the reproduction, according to project documentation. The final record should identify the applicable disclosure and distinguish assistance with development from independent technical review.
+- **Licensing and attribution:** Repository license, source-file notices, and the licensing status of reused material must be verified before publication.
+- **Equation-to-code traceability:** Map each governing equation and critical-point condition to the exact source function and line range before the record is finalized.
 
 ## 8. Computational Results
 
-- **Results generated:** A documented spectral-solver reproduction of the expansion-wave solution and the \(m_0(A)\) family.
-- **Tables, figures, and data files:** `Shu1977_results_spectral_full.txt` is the documented results file; exact current path and tracked status must be checked.
-- **Important derived quantities:** \(m_0(A)\), \(\alpha(x)\), \(-v(x)\), and \(m(x)\).
-- **Numerical precision and tolerances:** The recorded comparisons report relative and absolute differences; solver tolerances and full precision of the reference data must be extracted from the actual implementation and result files.
-- **Convergence or refinement tests:** Results were recorded for \(N=30,\ 60,\ 120\); Newton continuation reportedly converged in 2–4 iterations per stage. The underlying logs should be linked.
-- **Sensitivity tests:** A comparison across multiple \(A\) values and an expansion-wave solution was recorded. Further sensitivity tests should be documented with their input parameters.
-- **Execution logs or other supporting evidence:** Exact log paths are not yet established.
-- **Evidence references:** `papers/1977Shu/mathematical_explanation.tex`; `papers/1977Shu/README.md`; the solver source files and numerical result files, whose exact paths and revision must be confirmed.
+### 8.1 RK4 and RK45
+
+For \(A=2.4\), the recorded mass estimates are
+
+\[
+m_{0,\mathrm{RK4}}=1.885209332164,
+\]
+
+\[
+m_{0,\mathrm{RK45}}=1.885209332537.
+\]
+
+The absolute difference is approximately \(3.73\times10^{-10}\), and the relative difference is approximately \(1.98\times10^{-10}\).
+
+The recorded maximum relative profile differences, calculated on a common logarithmic grid using piecewise cubic Hermite interpolation, are:
+
+| Quantity | Maximum relative difference |
+|---|---:|
+| Density profile \(\alpha\) | \(1.19\times10^{-8}\) |
+| Velocity profile \(v\) | \(2.03\times10^{-9}\) |
+
+These are reported comparison results. The comparison script and underlying profile data must be linked so another researcher can reproduce the statistics.
+
+### 8.2 Taylor-series local comparison
+
+The Taylor-series method and ODE45 were compared over \(x=2\) to \(x=1.5\). The recorded maximum scaled differences are:
+
+| Quantity | Maximum scaled difference |
+|---|---:|
+| Velocity \(v\) | \(3.585\times10^{-14}\) |
+| Density \(\alpha\) | \(5.909\times10^{-14}\) |
+| Mass \(m\) | \(1.095\times10^{-13}\) |
+
+These results support close agreement for this local test. The scaling definition, test script, initialization, and raw output must be preserved for independent reproduction. The results must not be interpreted as global error estimates.
+
+### 8.3 Published numerical result
+
+For \(A=2.4\), Shu's Table 1 reports \(m_0\approx1.88\) at the printed precision.
+
+The recorded RK4 and RK45 values are consistent with this rounded value. Because the published number has only two decimal places, the difference between a computed value and \(1.88\) is not, by itself, a reliable estimate of numerical error against an exact reference.
+
+### 8.4 Excluded exploratory results
+
+Spectral-collocation calculations and their resolution studies are outside the primary evidence set. They must not be used to claim successful spectral convergence or to determine the primary verdict in this record.
 
 ## 9. Quantitative Validation
 
-### 9.1 Comparison definition
+### 9.1 Comparison definitions
 
-- **Published reference result:** Published \(m_0(A)\) values and expansion-wave profiles attributed to Shu (1977); the exact reference table, figure, or extraction procedure must be identified.
-- **Independent result:** Spectral-collocation solver output documented in the project results.
-- **Compared quantities and units:** Dimensionless \(m_0(A)\), \(\alpha(x)\), \(-v(x)\), and \(m(x)\).
-- **Comparison domain:** \(A=2.2\)–\(4.0\) for the recorded \(m_0(A)\) comparison; \(x=0.05\)–\(1\) for the recorded expansion-wave profile comparison. The exact sampled points should be preserved in the evidence files.
-- **Interpolation or alignment procedure, if needed:** Unknown until the comparison implementation is inspected.
-- **Treatment of rounding and uncertainty:** The reported comparisons include differences from rounded published values. The exact precision of the paper's reference values must be documented.
+- **Published reference result:** Shu's tabulated mass value \(m_0\approx1.88\) for \(A=2.4\), subject to verification against the original table.
+- **RK4 result:** \(1.885209332164\).
+- **RK45 result:** \(1.885209332537\).
+- **Taylor-series result:** Local profile and mass comparison against ODE45 over \(x=2\) to \(x=1.5\); this test is not a direct high-precision comparison against a published mass value.
+- **Compared quantities:** Dimensionless mass \(m\), density profile \(\alpha\), and velocity profile \(v\).
+- **Comparison domains:** The full RK4/RK45 integration interval is \(10\geq x\geq10^{-3}\). The documented Taylor comparison covers only \(2\geq x\geq1.5\).
+- **Interpolation or alignment:** The RK4/RK45 profile comparison uses a common logarithmic grid and piecewise cubic Hermite interpolation. The exact Taylor comparison alignment procedure must be linked to the test implementation.
+- **Rounding and uncertainty:** The published mass value is rounded to two decimal places. A more precise authoritative reference has not been established in this record.
 
 ### 9.2 Numerical agreement
 
-- **Maximum absolute difference:** \(1.10\times10^{-2}\) for the recorded \(m_0(A)\) comparison.
-- **Maximum relative difference, where meaningful:** \(0.293\%\) for the recorded \(m_0(A)\) comparison; \(0.380\%\) for \(\alpha(x)\), \(0.618\%\) for \(-v(x)\), and \(0.442\%\) for \(m(x)\) in the expansion-wave comparison.
-- **RMS difference or other summary metric:** Recorded \(m_0(A)\) RMS absolute difference \(7.02\times10^{-3}\); mean absolute difference \(6.26\times10^{-3}\); mean relative difference \(0.190\%\).
-- **Agreement in important derived quantities:** At \(x=1\), the spectral result reportedly satisfies \(\alpha=2\), \(-v=0\), and \(m=2\) to approximately \(10^{-15}\). At \(x_{\min}=10^{-3}\), the recorded \(m_0\) is \(0.975484\), compared with a published value of \(0.975\), a difference of \(4.84\times10^{-4}\).
-- **Convergence verified:** Provisionally, yes, according to the recorded \(N=30,\ 60,\ 120\) refinement study; verify the underlying data before finalization.
-- **Acceptance criteria and justification:** No universal tolerance is assumed. The observed differences should be evaluated relative to the published precision, refinement behavior, independent-method agreement, and their effect on the scientific conclusion.
+- **Absolute RK4/RK45 mass difference:** Approximately \(3.73\times10^{-10}\).
+- **Relative RK4/RK45 mass difference:** Approximately \(1.98\times10^{-10}\).
+- **Maximum relative RK4/RK45 density-profile difference:** Approximately \(1.19\times10^{-8}\).
+- **Maximum relative RK4/RK45 velocity-profile difference:** Approximately \(2.03\times10^{-9}\).
+- **Maximum scaled Taylor/ODE45 differences:** \(3.585\times10^{-14}\) for \(v\), \(5.909\times10^{-14}\) for \(\alpha\), and \(1.095\times10^{-13}\) for \(m\), for the documented local test.
+- **Convergence verified:** The recorded agreement supports numerical consistency for the specific comparisons. It does not establish convergence of every solution family or global convergence of the Taylor-series method.
+- **Acceptance criteria:** No universal tolerance is assumed. Results should be assessed against the documented comparison procedure, solver settings, reference precision, and intended scientific quantity.
 
 ## 10. Discrepancy Analysis
 
-- **Discrepancy detected:** Yes, small numerical differences are recorded.
-- **Comparison level:** Numerical result.
-- **Classification:** Numerical method and source or reporting are plausible categories; the cause is not conclusively established.
-- **Evidence supporting the classification:** Recorded differences between spectral results and published values, along with reported agreement among spectral, fixed-step RK4, and adaptive RK45 implementations.
-- **Cause established:** Partially. Historical RK4/critical-region resolution and published rounding have been suggested as possible explanations, but have not been established as the definitive cause.
-- **Unresolved questions:** Exact reference-value extraction, original integration settings, comparison alignment, and the reproducibility of all reported summary statistics from the current repository.
-- **Effect on the verification result:** The recorded discrepancies are small, but their final classification and impact assessment depend on confirming the reference data and comparison workflow.
+- **Discrepancies detected:** The computed mass values differ from the rounded printed value \(1.88\), and RK4 and RK45 differ by a small numerical amount.
+- **Comparison level:** Numerical result and numerical integration cross-check.
+- **Classification:** The RK4/RK45 difference is consistent with a small numerical integration difference under the tested settings. The difference from the printed mass value cannot be conclusively classified using the rounded value alone.
+- **Evidence:** Recorded RK4/RK45 masses and profile-difference statistics; Shu's tabulated value, subject to checking against the original paper.
+- **Cause established:** No complete causal analysis has been established.
+- **Unresolved questions:** Exact reference-value extraction, original integration settings, mass-extraction details, raw comparison data, and independent reproduction of the summary statistics.
+- **Effect on verification:** The available data support close numerical consistency for the tested case, but do not prove exact procedural reproduction or full scientific verification.
 
 ## 11. Physical and Structural Agreement
 
-- **Relevant physical or mathematical properties:** Similarity scaling, the critical-point condition, the expansion-wave boundary values, and consistency of the dimensionless mass relation.
-- **Qualitative behavior preserved:** Provisionally, yes, according to the recorded comparison; direct evidence should be linked.
-- **Critical features preserved:** The critical-point values at \(x=1\) are reported to agree to approximately machine precision.
-- **Conservation, stability, scaling, or other applicable properties:** Similarity relations and the mass relation are relevant. A separate conservation-law or stability analysis has not yet been established by the recorded evidence.
-- **Evidence and limitations:** Mathematical documentation and solver outputs are the intended evidence sources; precise code and data references remain to be added.
+- **Relevant mathematical properties:** Similarity scaling, the governing ODEs, the critical-point conditions, and the dimensionless mass relation.
+- **Qualitative behavior preserved:** Not fully established by the quantitative comparisons documented here.
+- **Critical features preserved:** The expansion-wave conditions \(v(1)=0\) and \(\alpha(1)=2\) are documented in the project. Their implementation and numerical satisfaction should be supported by explicit tests before a pass verdict is assigned.
+- **Conservation, stability, and scaling:** The mass relation and similarity scaling are relevant checks. A separate conservation-law or stability analysis is not established by the current evidence.
+- **Evidence and limitations:** The numerical results support the specified cross-checks, but a comprehensive physical and structural validation remains outstanding.
 
 ## 12. Scientific Conclusion
 
-- **Original scientific conclusion examined:** Shu's self-similar isothermal-collapse solution and the associated expansion-wave behavior and dimensionless mass-accretion parameter.
-- **Conclusion supported by the independent computation:** The recorded computation is consistent with the examined published numerical results within the reported differences; full source-to-result traceability remains to be confirmed.
-- **Original conclusion preserved:** Provisionally, yes; not yet a final independently reviewed determination.
-- **Does the discrepancy affect the scientific conclusion?** No material effect has been identified in the recorded analysis, subject to confirmation of the numerical evidence.
-- **Scientific impact:** Provisionally negligible.
-- **Justification:** Reported profile differences are below \(0.7\%\), and the recorded critical-point values agree to approximately machine precision. This assessment remains provisional until the comparison and reference extraction are independently checked.
+- **Original scientific result examined:** Selected numerical aspects of Shu's self-similar isothermal-collapse solutions, with a primary mass comparison at \(A=2.4\) and a local Taylor-series cross-check.
+- **Conclusion supported by the computation:** RK4 and RK45 produce closely matching numerical results for the tested configuration. The Taylor-series method agrees closely with ODE45 over the documented local interval.
+- **Original conclusion preserved:** Not determined comprehensively. The documented comparisons do not cover every result or scientific claim in the paper.
+- **Does the discrepancy affect the scientific conclusion?** No material effect has been demonstrated for the narrow numerical comparisons documented here. A broader scientific-impact assessment is not established.
+- **Scientific impact:** Not established beyond the tested quantities and intervals.
+- **Justification:** The recorded numerical methods agree closely in the stated comparisons, and the RK4/RK45 mass values are consistent with the published rounded value. This does not independently validate the full mathematical formulation, every solution branch, or the paper's broader conclusions.
 
 ## 13. Verification Verdict
 
-- **Numerical agreement:** PASS WITH DIFFERENCES (provisional)
-- **Physical or structural agreement:** PASS (provisional)
-- **Scientific conclusion:** PRESERVED (provisional)
-- **Overall verdict:** INCONCLUSIVE pending evidence and workflow audit.
-- **Primary discrepancy source:** Unknown; numerical-method and source/reporting effects remain possible.
-- **Discrepancy impact:** Provisionally negligible.
-- **Verdict justification:** Existing project notes report close quantitative agreement and cross-method consistency. However, the exact source data, execution commands, logs, code revision, and comparison procedure have not yet been assembled here as traceable evidence. Under the project's own policy, the overall verdict remains INCONCLUSIVE until those essential elements are confirmed.
+- **RK4/RK45 numerical consistency:** Supported for the documented \(A=2.4\) test case, subject to reproduction of the comparison statistics.
+- **Taylor-series/ODE45 local consistency:** Supported for the documented interval \(x=2\) to \(x=1.5\), subject to confirmation of the test configuration and raw output.
+- **Agreement with the published mass:** Consistent with the rounded value \(m_0\approx1.88\); high-precision agreement with an authoritative reference has not been established.
+- **Physical or structural agreement:** Not fully assessed.
+- **Scientific conclusion:** Not comprehensively verified.
+- **Overall verdict:** **PARTIAL NUMERICAL REPRODUCTION — broader verification pending.**
+- **Primary unresolved issues:** Evidence traceability, reproducible execution instructions, complete equation-to-code mapping, exact reference extraction, independent review, and confirmation of the Taylor comparison artifacts.
+- **Verdict justification:** The available results demonstrate close numerical consistency between RK4 and RK45 for a specified test case and between Taylor-series integration and ODE45 for a specified local interval. These are meaningful cross-checks, but they do not establish full independent verification of Shu (1977).
+
+This verdict is deliberately scoped to the evidence currently documented. It should be revised only when additional checks are reproducibly demonstrated.
 
 ## 14. Review and Revision History
 
@@ -160,17 +269,25 @@
 - **Review comments:** Pending.
 - **Changes requested:** Pending review.
 - **Resolution of review comments:** Not applicable at this draft stage.
-- **Revision history:** Version 0.1; initial draft assembled from existing project notes and documentation.
+- **Revision history:**
+  - **Version 0.1:** Initial draft assembled from prior project notes and documentation.
+  - **Version 0.2:** Primary scope revised to RK4, RK45, and higher-order Taylor series. Spectral collocation and its historical quantitative claims were removed from the primary verification evidence. Verdict narrowed to the documented comparisons.
 
 ## 15. Limitations and Future Work
 
-- **Limitations of this verification:** The record has not yet been independently reviewed. Several evidence paths, execution details, and reference-extraction procedures remain to be confirmed.
-- **Evidence limitations:** The reported quantitative statistics are drawn from prior project notes; their reproduction from the current source files and raw comparison data has not yet been demonstrated in this record.
-- **Unverified claims or quantities:** Original method settings; exact published reference values and their extraction; current availability and revision of result files; solver tolerances; comparison alignment; full cross-method agreement; licensing and code-reuse status.
-- **Additional tests needed:** Re-run the documented workflow from the recorded commit; reproduce summary statistics from raw comparison data; confirm critical-point treatment and refinement results; review source and provenance documentation.
-- **Potential independent implementations:** A fresh implementation of the similarity equations using a separately coded adaptive Runge–Kutta solver, with explicit critical-point handling.
-- **Suggested future work:** Attach machine-readable comparison data and execution logs, record exact source paths and commit hashes, obtain an independent technical review, and revise the verdict only after the evidence audit.
+- **Limitations:** The record has not been independently reviewed. Exact commands, code revisions, comparison scripts, raw data, and some method-specific settings remain to be confirmed.
+- **Evidence limitations:** Reported numerical statistics must be reproduced from the identified source files and output data. A recorded result is not independently verified merely because it appears in a report.
+- **Unverified claims or quantities:** Exact original solver settings, authoritative high-precision reference values, complete Taylor-series workflow details, full equation-to-code traceability, and broad physical or structural agreement.
+- **Additional tests needed:**
+  1. Re-run RK4 and RK45 from a recorded Git revision and reproduce their mass and profile comparisons.
+  2. Re-run the Taylor-series local test with recorded settings and regenerate its comparison statistics.
+  3. Preserve raw numerical outputs and the scripts that calculate the reported differences.
+  4. Check the governing equations, asymptotic initialization, critical-point treatment, and mass extraction against the publication and mathematical documentation.
+  5. Record software versions, execution commands, source revision identifiers, and file hashes where appropriate.
+  6. Obtain independent technical review before assigning a stronger verdict.
+- **Potential future independent implementations:** A separately coded solver with independently checked equation transcription and initialization. Such an implementation would provide additional evidence beyond comparisons that share the same right-hand side.
+- **Suggested future work:** Improve machine-readable evidence, attach execution logs and comparison data, document provenance and licensing, and revise the verdict only after the relevant tests have been reproduced and reviewed.
 
 ---
 
-**Draft status note:** This record is a structured starting point. Numerical values and method descriptions must be checked against the current repository, the full publication, and reproducible execution evidence before the record can be marked `Verified`.
+**Draft status note:** This record remains a draft. Numerical values and method descriptions must be checked against the current repository, the original publication, and reproducible execution evidence before the record is marked as verified.

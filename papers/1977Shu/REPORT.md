@@ -1,212 +1,158 @@
-# Numerical Reproduction Report: Shu (1977), Self-Similar Collapse of Isothermal Spheres
+# Numerical Reproduction Report: Shu (1977)
 
-**Status:** Partial numerical reproduction with cross-method consistency checks
+**Status:** Partial numerical reproduction with three-method cross-checks
 **Target paper:** Shu, F. H. (1977), “Self-Similar Collapse of Isothermal Spheres and Star Formation,” *The Astrophysical Journal*, 214, 488–497.
-**Reference:** [NASA ADS paper record and PDF](https://ui.adsabs.harvard.edu/link_gateway/1977ApJ...214..488S/ADS_PDF)
-**Implementation environment:** GNU Octave on Windows
-**Primary test case:** \(A=2.40\)
+**DOI:** [10.1086/155274](https://doi.org/10.1086/155274)
 
-## Abstract
+## 1. Objective and scope
 
-This report documents a numerical reproduction attempt of the self-similar isothermal collapse solutions presented by Shu (1977). The similarity equations were solved using two ordinary differential equation integration methods, classical fourth-order Runge–Kutta (RK4) and adaptive Runge–Kutta integration (RK45), and a Chebyshev spectral collocation method.
+This report documents a numerical reproduction study of the similarity solutions discussed by Shu (1977). The primary computational scope is restricted to three numerical approaches:
 
-For the test case \(A=2.40\), the RK4 and RK45 integrations produced closely agreeing estimates of the central mass parameter, \(m_0\approx1.88520933\). The spectral calculation produced \(m_0\approx1.88516680\). Spectral calculations at resolutions \(N=240\) and \(N=320\) gave central mass estimates agreeing to approximately \(4\times10^{-10}\) in absolute terms. However, the \(N=320\) nonlinear solver terminated with a stagnation status rather than a convergence status. The paper reports \(m_0=1.88\) in its table at \(A=2.40\).
+1. Fixed-step fourth-order Runge–Kutta (RK4).
+2. Adaptive Runge–Kutta integration using ODE45 (RK45).
+3. Higher-order Taylor-series integration.
 
-These results demonstrate strong numerical consistency between the two ODE integration methods. The spectral mass estimates at \(N=240\) and \(N=320\) are numerically close, but the \(N=320\) nonlinear solver terminated with a stagnation status. Their agreement therefore does not establish spectral convergence. The results do not yet establish exact reproduction of Shu’s original numerical procedure, nor do they constitute a fully successful spectral convergence study.
+The objective is to compare numerical outputs, document the conditions under which agreement is observed, and assess consistency with specific published results. The study does not claim to verify every numerical result or scientific conclusion in the original paper.
 
-## 1. Objective
+Chebyshev spectral collocation was explored during development but is excluded from the primary verification results. Its historical source files and diagnostic outputs are retained separately and are not used to support the conclusions in this report.
 
-The objective is to reproduce the self-similar collapse solution for an isothermal sphere described by Shu (1977), focusing on the similarity profiles and the central mass parameter.
+## 2. Mathematical problem
 
-The primary comparison quantity is \(m_0\), evaluated for \(A=2.40\), for which the paper's table gives \(m_0=1.88\) at the printed precision.
-
-The work also compares the density and velocity profiles obtained using different numerical methods.
-
-## 2. Mathematical formulation
-
-The similarity variables are defined as
+The similarity variables are
 
 \[
 x=\frac{r}{at},\qquad
-\rho=\frac{\alpha(x)}{4\pi Gt^2},\qquad
-u=av(x),\qquad
-M=\frac{a^3t}{G}m(x),
+\rho(r,t)=\frac{\alpha(x)}{4\pi Gt^2},\qquad
+u(r,t)=av(x),
 \]
 
-where \(a\) is the isothermal sound speed and \(G\) is the gravitational constant.
-
-The dimensionless mass is related to the density and velocity profiles by
+with dimensionless enclosed mass
 
 \[
-m(x)=x^2\alpha(x)\,[x-v(x)].
+m(x)=x^2\alpha(x)(x-v(x)).
 \]
 
-The similarity equations implemented in the ODE solver are
+Define
 
 \[
-\frac{dv}{dx}
-=
-\frac{[\alpha(x-v)-2/x](x-v)}
-{(x-v)^2-1},
+w=x-v,\qquad D=w^2-1.
 \]
 
-and
+The equations used in the computational implementation are
 
 \[
-\frac{d\alpha}{dx}
-=
-\frac{\alpha[\alpha-2(x-v)/x](x-v)}
-{(x-v)^2-1}.
+xD\frac{dv}{dx}=(\alpha wx-2)w,
 \]
 
-These equations are integrated for the selected parameter \(A\), using the large-\(x\) asymptotic behavior to initialize the ODE calculations.
+\[
+xD\frac{d\alpha}{dx}=\alpha(\alpha x-2w)w.
+\]
+
+Equation conventions, critical-point treatment, and asymptotic initial conditions must be traceable to the mathematical documentation and checked against the original publication before a final independent-review verdict is assigned.
 
 ## 3. Numerical methods
 
-### 3.1 RK4 integration
+### 3.1 Fixed-step RK4
 
-The fixed-step solver uses classical fourth-order Runge–Kutta integration. It starts at \(x=10\) and integrates inward to \(x=10^{-3}\).
+The recorded RK4 calculation uses \(A=2.4\), starts at \(x=10\), and integrates inward to \(x=10^{-3}\) with step size \(h=10^{-5}\).
 
-The initial values use asymptotic expressions for \(\alpha\) and \(v\), including higher-order corrections. The central mass estimate uses the computed mass profile and a small-\(x\) extrapolation correction.
-
-For \(A=2.40\), the run with nominal step size \(h=10^{-5}\) gave
+Reported dimensionless mass:
 
 \[
-m_{0,\mathrm{RK4}}\approx1.8852093322.
+m_0=1.885209332164.
 \]
 
-### 3.2 Adaptive RK45 integration
+The recorded profile contains 999,901 points.
 
-The adaptive solver uses GNU Octave's `ode45`, with `ode15s` available as a fallback in the implementation.
+### 3.2 Adaptive RK45
 
-The reported test used the settings
+The recorded RK45 calculation uses the same parameter and integration endpoints, with relative tolerance \(10^{-11}\), absolute tolerance \(10^{-13}\), and maximum step \(0.005\).
 
-- Relative tolerance: \(10^{-11}\)
-- Absolute tolerance: \(10^{-13}\)
-- Maximum step: \(0.005\)
-
-The integration interval was \(10\geq x\geq10^{-3}\).
-
-For \(A=2.40\), the result was
+Reported dimensionless mass:
 
 \[
-m_{0,\mathrm{RK45}}\approx1.8852093325.
+m_0=1.885209332537.
 \]
 
-The RK4 and RK45 profiles were compared on a common logarithmic grid using piecewise cubic Hermite (`pchip`) interpolation.
+The recorded profile contains 9,269 points.
 
-### 3.3 Chebyshev spectral collocation
+### 3.3 Higher-order Taylor series
 
-The spectral solver represents the solution on a Chebyshev grid in \(t=\log x\). A Chebyshev differentiation matrix is used to discretize the differential equations, and a nonlinear Newton-type method solves the resulting residual equations.
+The Taylor-series implementation advances the solution using local higher-order expansions rather than a Runge–Kutta stepper or global spectral collocation.
 
-The test used
+A documented local test compares Taylor-series integration with ODE45 from \(x=2\) to \(x=1.5\). The reported maximum scaled differences are:
 
-\[
-x_{\min}=10^{-6},\qquad x_{\max}=40,\qquad A=2.40.
-\]
-
-The outer boundary conditions use asymptotic expressions for the velocity and density. The inner behavior is represented through the nonlinear solution rather than by imposing a separately specified central boundary value.
-
-The residual function, differentiation matrix, nonlinear solver, and wrapper are implemented in the Octave code. The wrapper was extended to test both \(N=240\) and \(N=320\), using the lower-resolution solution as the initial guess for the higher-resolution solver.
-
-## 4. Results
-
-### 4.1 Central mass estimates
-
-| Method | Resolution or settings | Estimated \(m_0\) | Solver status |
-|---|---|---:|---|
-| RK4 | \(h=10^{-5}\), nominal | 1.8852093322 | Successful |
-| RK45 | Specified adaptive tolerances | 1.8852093325 | Successful |
-| Spectral | \(N=240\) | 1.8851668012 | Converged |
-| Spectral | \(N=320\) | 1.8851668008 | Stagnated |
-
-The RK4 and RK45 mass estimates differ by approximately \(3\times10^{-10}\). The spectral mass estimates differ by approximately \(4\times10^{-10}\) between the two tested resolutions.
-
-The spectral and ODE-based estimates differ by approximately \(4.25\times10^{-5}\), or \(0.0023\%\) relative to the RK45 value.
-
-### 4.2 Comparison with Shu (1977)
-
-Shu's table reports \(m_0=1.88\) for \(A=2.40\).
-
-The spectral estimate exceeds the printed value by approximately \(0.00517\); the RK4 and RK45 estimates exceed it by approximately \(0.00521\).
-
-The table provides only two decimal places. Therefore, the printed value is insufficient to determine whether the small discrepancy reflects rounding, differences in numerical procedures, or other implementation details.
-
-The results are close to the tabulated value, but exact agreement with the original numerical result has not been established.
-
-### 4.3 Profile agreement
-
-Using `pchip` interpolation on a common logarithmic grid, the maximum relative profile differences between RK4 and RK45 were approximately
-
-| Quantity | Maximum relative difference |
+| Quantity | Maximum scaled difference |
 |---|---:|
-| Density \(\alpha\) | \(1.19\times10^{-8}\) |
-| Velocity \(v\) | \(2.03\times10^{-9}\) |
+| \(v\) | \(3.585\times10^{-14}\) |
+| \(\alpha\) | \(5.909\times10^{-14}\) |
+| \(m\) | \(1.095\times10^{-13}\) |
 
-The spectral solution at \(N=240\) differed from RK45 by approximately
+These figures support close agreement for the specified local test. They are not global error bounds and do not establish agreement over every solution branch or integration interval.
 
-| Quantity | Maximum relative difference |
+The Taylor order, tolerances, initialization, comparison procedure, and exact output artifacts must accompany the result in the finalized evidence package.
+
+## 4. Quantitative comparisons
+
+### 4.1 RK4 versus RK45
+
+| Quantity | Recorded result |
 |---|---:|
-| Density \(\alpha\) | \(5.08\times10^{-5}\) |
-| Velocity \(v\) | \(9.01\times10^{-5}\) |
+| RK4 mass | 1.885209332164 |
+| RK45 mass | 1.885209332537 |
+| Absolute mass difference | \(3.73\times10^{-10}\) |
+| Relative mass difference | Approximately \(1.98\times10^{-10}\) |
+| Maximum relative profile difference in \(\alpha\) | \(1.19\times10^{-8}\) |
+| Maximum relative profile difference in \(v\) | \(2.03\times10^{-9}\) |
 
-The maximum density difference occurred near \(x=0.00278\); the maximum velocity difference occurred near \(x=1.0723\).
+The recorded profiles were compared on a common logarithmic grid using piecewise cubic Hermite interpolation. The exact comparison script and data should be linked in the finalized record.
 
-The close agreement of RK4 and RK45 is evidence of numerical consistency between the two integrations. Because they share the same equations, asymptotic initialization, and mass-extraction approach, their agreement is not an independent validation of those shared choices.
+The close agreement supports numerical consistency between the two integration schemes for the tested configuration. Because the implementations share the governing equations and right-hand-side implementation, this comparison is not a fully independent validation of the mathematical formulation.
 
-### 4.4 Spectral resolution test
+### 4.2 Comparison with the published mass
 
-The spectral mass estimates for \(N=240\) and \(N=320\) were
+For the \(A=2.4\) case, Shu's Table 1 reports a dimensionless mass value of approximately \(1.88\) at the published precision.
 
-\[
-m_{0,240}=1.8851668012,
-\qquad
-m_{0,320}=1.8851668008.
-\]
+Both RK4 and RK45 produce values consistent with this rounded number. The additional digits from the computations should not be interpreted as a direct error measurement against an exact value unavailable at that precision.
 
-Their difference is approximately \(4\times10^{-10}\). The maximum relative profile differences between the two candidate solutions were approximately \(5.70\times10^{-5}\) for \(\alpha\) and \(6.87\times10^{-5}\) for \(v\).
+### 4.3 Taylor-series comparison
 
-However, the \(N=320\) Newton solver terminated with status `stagnated`. Its reported scaled relative residual was approximately \(6.71\times10^{-8}\). The saved run also reports an unscaled residual norm of approximately \(1.14\times10^{-3}\); because the two residual measures use different scaling, their magnitudes should not be compared directly.
+The Taylor-series method has demonstrated close local agreement with ODE45 over the documented interval. This result provides an additional numerical cross-check, subject to confirmation of the implementation details and reproducible output.
 
-The close mass estimates and similar profiles indicate numerical consistency across the two tested resolutions, but they do not establish spectral convergence. Further investigation of the nonlinear solver's stopping criteria and residual scaling is needed before treating the \(N=320\) solution as converged.
+The local comparison should not be presented as a global validation of the full collapse solution.
 
-## 5. Limitations
+## 5. Interpretation
 
-Several limitations remain.
+The present evidence supports two limited findings:
 
-1. **Exact procedural reproduction is unconfirmed.** Shu describes using asymptotic initial conditions evaluated at \(x=10\) and a fourth-order Runge–Kutta integration scheme. The available description does not fully specify every integration parameter needed to reproduce the original computation exactly.
+- RK4 and RK45 give closely matching mass and profile results for the tested \(A=2.4\) configuration.
+- The higher-order Taylor-series method agrees closely with ODE45 in the documented local integration test.
 
-2. **The central mass extraction includes an implementation-specific correction.** The small-\(x\) mass extrapolation used here has not been demonstrated to be identical to Shu's original extraction procedure.
+These results are evidence of numerical consistency. They do not independently establish the correctness of all governing equations, boundary conditions, physical assumptions, solution branches, or scientific conclusions in Shu (1977).
 
-3. **The spectral refinement test is incomplete.** The \(N=320\) nonlinear solver stagnated, so the higher-resolution candidate cannot yet be treated as a fully converged solution.
+## 6. Limitations and outstanding evidence
 
-4. **The reference value is rounded.** The tabulated \(m_0=1.88\) does not provide enough digits for a stringent numerical error assessment.
+Before the benchmark is assigned a final verification verdict, the following items must be confirmed:
 
-5. **The methods share assumptions.** Agreement between the ODE solvers does not independently verify the derivation of the equations or the asymptotic initialization.
+- Exact source files and revision identifiers used for each reported result.
+- Reproducible commands and software versions.
+- Taylor-series order, tolerances, and initialization for the reported comparison.
+- The comparison script and raw data underlying profile-difference statistics.
+- Equation and boundary-condition traceability to the original publication.
+- Independent technical review of the computational evidence.
 
-## 6. Reproducibility and implementation
+Information that is unavailable should be marked **Unknown**, **Not reported**, or **Not applicable**, as appropriate, rather than inferred.
 
-The implementation uses GNU Octave and the following source files:
+## 7. Current assessment
 
-- `shu_odes.m` — similarity ODE system.
-- `rk45_integrate.m` — adaptive ODE integration and mass estimation.
-- `shu1977_rk4.m` — fixed-step fourth-order Runge–Kutta integration.
-- `sc_cheb.m` — Chebyshev differentiation matrix.
-- `sc_res_collapse.m` — spectral residual and outer boundary conditions.
-- `sc_solve_collapse_N240.m` — original fixed-resolution spectral wrapper.
-- `sc_solve_collapse_N.m` — configurable-resolution spectral wrapper.
-- `sc_newton_cs.m` — nonlinear solver used by the spectral method.
+**Assessment:** Numerical cross-consistency demonstrated for the specific cases examined; broader quantitative verification remains limited to the documented comparisons.
 
-For a complete reproducibility package, the repository should preserve the exact versions of these files, the Octave version, the parameter values, solver settings, command transcripts, convergence statuses, and generated output data. The spectral stagnation status should remain part of the recorded results rather than being omitted.
+The RK4 and RK45 results are closely consistent with one another and with the rounded mass value reported by Shu (1977) for the examined case. The Taylor-series method supplies a further local numerical comparison with ODE45.
 
-## 7. Conclusion
+The benchmark remains a partial numerical reproduction. A final verification verdict requires complete evidence traceability, review of the mathematical formulation and boundary conditions, reproducible execution instructions, and independent technical review.
 
-The implemented calculations produce mutually consistent numerical profiles for the \(A=2.40\) isothermal-collapse test case. The RK4 and RK45 integrations agree closely, while the spectral solver produces a similar central mass estimate and similar profiles at the two tested resolutions. However, the \(N=320\) nonlinear solver stagnated, so the spectral resolution test does not establish convergence.
+## References
 
-The computed central mass is approximately \(1.88517\) using the spectral method and \(1.88521\) using the ODE integrations, compared with the \(1.88\) printed in Shu's table.
+Shu, F. H. (1977). "Self-Similar Collapse of Isothermal Spheres and Star Formation." *The Astrophysical Journal*, 214, 488–497. https://doi.org/10.1086/155274
 
-The evidence supports a **partial numerical reproduction with documented assumptions and cross-method consistency checks**. Exact reproduction of Shu's original computational procedure has not been established, and the spectral convergence study remains incomplete because the \(N=320\) nonlinear solver stagnated.
-
-## Reference
-
-Shu, F. H. (1977). “Self-Similar Collapse of Isothermal Spheres and Star Formation.” *The Astrophysical Journal*, 214, 488–497. https://doi.org/10.1086/155274
+NASA Astrophysics Data System: https://ui.adsabs.harvard.edu/link_gateway/1977ApJ...214..488S/ADS_PDF
