@@ -1,0 +1,296 @@
+
+{
+  "schema_version": "1.0",
+  "record": {
+    "id": "shu-1977-self-similar-collapse",
+    "version": "0.3",
+    "status": "draft",
+    "created": "2026-10-21",
+    "updated": "2026-10-27",
+    "contributors": {
+      "status": "not_reported",
+      "note": "Contributor names and roles have not yet been formally recorded."
+    },
+    "reviewers": {
+      "status": "not_yet_confirmed",
+      "note": "Independent review has not yet been documented."
+    }
+  },
+  "publication": {
+    "title": "Self-Similar Collapse of Isothermal Spheres and Star Formation",
+    "authors": "F. H. Shu",
+    "year": 1977,
+    "venue": "The Astrophysical Journal, 214, 488-497",
+    "doi": "10.1086/155274",
+    "publication_url": "https://doi.org/10.1086/155274",
+    "published_code_or_data_url": {
+      "status": "not_reported",
+      "note": "A publication-associated source-code or numerical-data archive has not been confirmed."
+    }
+  },
+  "target": {
+    "description": "Numerical reproduction and cross-checking of the similarity solutions for the self-similar collapse of isothermal spheres described by Shu (1977).",
+    "scope": "Primary quantitative cross-check: the final mass parameter for the A=2.4 collapse solution computed with fixed-step RK4 and adaptive RK45. The published Table 1 value is rounded and is not a high-precision reference solution. Taylor-series and spectral calculations are supplementary and have different evidence status.",
+    "reference_results": [
+      "Shu (1977), Table 1 reports a mass parameter of 1.88, rounded to two decimal places; this value should not be treated as a high-precision benchmark."
+    ]
+  },
+  "verification": {
+    "workflow_stage": "submitted",
+    "scientific_verdict": "partial_numerical_reproduction",
+    "verdict_justification": "For A=2.4, the fixed-step RK4 and adaptive RK45 implementations produce final mass parameters of 1.885209332164 and 1.885209332537, respectively, with a relative difference of approximately 1.98e-10. Their reported profile differences on a common logarithmic grid are also small. This supports strong numerical agreement between the two integrations. However, both methods use the same governing equations and related asymptotic initial assumptions, so the agreement does not establish fully independent verification of the mathematical formulation. Shu's published value of 1.88 is rounded. Taylor-series implementation evidence has not been located in the current repository audit, and the spectral calculation remains exploratory. The overall conclusion is therefore partial numerical reproduction, not complete independent verification.",
+    "review_scope": {
+      "status": "not_yet_confirmed",
+      "note": "No independent review scope has been recorded."
+    },
+    "review_date": {
+      "status": "not_applicable",
+      "note": "Independent review has not yet been completed."
+    }
+  },
+  "methods": [
+    {
+      "name": "Fixed-step fourth-order Runge-Kutta (RK4)",
+      "role": "primary_reproduction",
+      "implementation": "papers/1977Shu/code/shu1977_rk4.m",
+      "independence_assessment": "Provides a fixed-step integration that can be compared with adaptive RK45. It is not mathematically independent of RK45 because both use the same governing equations and related initial asymptotic assumptions.",
+      "settings": {
+        "parameter_A": 2.4,
+        "step_size": 0.00001,
+        "x_start": 10.0,
+        "x_end": 0.001,
+        "integration_method": "Fixed-step RK4"
+      },
+      "results": [
+        {
+          "quantity": "Final mass parameter m0",
+          "value": 1.885209332164,
+          "source": "computed",
+          "comparison_scope": "A=2.4 collapse solution; RK4 integration from x=10 to x=0.001 with step size 1e-5.",
+          "notes": "Computed result reported by the repository's numerical run."
+        }
+      ]
+    },
+    {
+      "name": "Adaptive Runge-Kutta (RK45; ode45)",
+      "role": "cross_check",
+      "implementation": "papers/1977Shu/code/shu1977_rk45.m",
+      "independence_assessment": "Provides an adaptive integration cross-check against fixed-step RK4. The integrator differs, but the governing equations and related initial asymptotic assumptions are shared; this is not a fully independent formulation.",
+      "settings": {
+        "parameter_A": 2.4,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance": 1e-13,
+        "maximum_step": 0.005,
+        "x_start": 10.0,
+        "x_end": 0.001,
+        "integration_method": "ode45"
+      },
+      "results": [
+        {
+          "quantity": "Final mass parameter m0",
+          "value": 1.885209332537,
+          "source": "computed",
+          "comparison_scope": "A=2.4 collapse solution; adaptive RK45 integration from x=10 to x=0.001.",
+          "notes": "Computed result reported by the repository's numerical run."
+        },
+        {
+          "quantity": "Absolute difference in final mass parameter between RK4 and RK45",
+          "value": 3.73e-10,
+          "source": "derived",
+          "comparison_scope": "Absolute difference between the reported RK4 and RK45 final mass values.",
+          "notes": "Derived from the displayed rounded results; exact difference from the full-precision outputs should be taken from the cross-check output."
+        },
+        {
+          "quantity": "Relative difference in final mass parameter between RK4 and RK45",
+          "value": 1.977996e-10,
+          "source": "derived",
+          "comparison_scope": "Relative difference between the reported RK4 and RK45 final mass values.",
+          "notes": "Reported relative mass difference."
+        },
+        {
+          "quantity": "Maximum relative profile difference in alpha",
+          "value": 1.188383e-08,
+          "source": "derived",
+          "comparison_scope": "RK4 versus RK45 on a common logarithmic grid using pchip interpolation.",
+          "notes": "Reported maximum relative difference."
+        },
+        {
+          "quantity": "Maximum relative profile difference in v",
+          "value": 2.026988e-09,
+          "source": "derived",
+          "comparison_scope": "RK4 versus RK45 on a common logarithmic grid using pchip interpolation.",
+          "notes": "Reported maximum relative difference."
+        }
+      ]
+    },
+    {
+      "name": "Higher-order Taylor-series integration",
+      "role": "cross_check",
+      "implementation": {
+        "status": "not_yet_confirmed",
+        "note": "Taylor-series source files were not found during the latest repository audit. The reported local comparison results are retained as provisional evidence until the implementation and raw outputs can be located."
+      },
+      "independence_assessment": "A Taylor-series integration can provide a different numerical integration strategy, but the implementation, complete solution path, and correspondence with the reported results have not yet been verified from the current repository contents.",
+      "settings": {
+        "reported_series_order": 16,
+        "reported_interval": "x=2 to x=1.5",
+        "reported_tolerance": 1e-12,
+        "reported_reference_method": "ode45 with RelTol=1e-12 and AbsTol=1e-14"
+      },
+      "results": [
+        {
+          "quantity": "Maximum scaled difference in v against ode45",
+          "value": 3.585e-14,
+          "source": "derived",
+          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
+          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+        },
+        {
+          "quantity": "Maximum scaled difference in alpha against ode45",
+          "value": 5.909e-14,
+          "source": "derived",
+          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
+          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+        },
+        {
+          "quantity": "Maximum scaled difference in mass against ode45",
+          "value": 1.095e-13,
+          "source": "derived",
+          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
+          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+        }
+      ]
+    },
+    {
+      "name": "Chebyshev spectral collocation",
+      "role": "exploratory",
+      "implementation": {
+        "status": "not_yet_confirmed",
+        "note": "Exploratory spectral implementation and its convergence evidence require separate review; it is not part of the primary verification verdict."
+      },
+      "independence_assessment": "Spectral collocation is a distinct numerical approach from time-marching integration, but the reported higher-resolution stagnation prevents treating the results as a verified independent reference.",
+      "settings": {
+        "parameter_A": 2.4,
+        "reported_resolution_values": [
+          240,
+          320
+        ],
+        "status": "Exploratory; N=320 was reported to stagnate."
+      },
+      "results": [
+        {
+          "quantity": "Final mass parameter m0 at N=240",
+          "value": 1.885166801206,
+          "source": "computed",
+          "comparison_scope": "Exploratory spectral collocation calculation for A=2.4.",
+          "notes": "Previously reported as converged at N=240; requires independent inspection of the spectral run and convergence criteria."
+        },
+        {
+          "quantity": "Final mass parameter candidate at N=320",
+          "value": 1.885166800847,
+          "source": "computed",
+          "comparison_scope": "Exploratory spectral collocation calculation for A=2.4.",
+          "notes": "Reported stagnated candidate; must not be treated as a confirmed converged result."
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "description": "Verification record in Markdown",
+      "kind": "report",
+      "location": "papers/1977Shu/verification_record.md",
+      "status": "available"
+    },
+    {
+      "description": "Project numerical reproduction report",
+      "kind": "report",
+      "location": "papers/1977Shu/REPORT.md",
+      "status": "available"
+    },
+    {
+      "description": "RK4 versus RK45 cross-check output",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/rk4_rk45_crosscheck_A2.4.txt",
+      "status": "available"
+    },
+    {
+      "description": "Numerical summary CSV",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/summary.csv",
+      "status": "available"
+    },
+    {
+      "description": "Run-all summary CSV",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/run_all_summary.csv",
+      "status": "available"
+    },
+    {
+      "description": "Run-all execution log",
+      "kind": "execution_log",
+      "location": "papers/1977Shu/results/run_all.log",
+      "status": "available"
+    },
+    {
+      "description": "Fixed-step RK4 implementation",
+      "kind": "source_code",
+      "location": "papers/1977Shu/code/shu1977_rk4.m",
+      "status": "available"
+    },
+    {
+      "description": "Adaptive RK45 implementation",
+      "kind": "source_code",
+      "location": "papers/1977Shu/code/shu1977_rk45.m",
+      "status": "available"
+    },
+    {
+      "description": "Taylor-series implementation associated with provisional local comparison results",
+      "kind": "source_code",
+      "location": {
+        "status": "not_yet_confirmed",
+        "note": "Taylor-series source files were not found during the latest repository audit."
+      },
+      "status": "not_yet_confirmed"
+    },
+    {
+      "description": "Original publication and its Table 1 reference value",
+      "kind": "reference_data",
+      "location": "https://doi.org/10.1086/155274",
+      "status": "available"
+    }
+  ],
+  "limitations": [
+    "The primary quantitative cross-check compares two integration methods using the same governing equations and related initial asymptotic assumptions; it is not a fully independent mathematical verification.",
+    "The published mass parameter 1.88 is rounded to two decimal places and is not a high-precision numerical benchmark.",
+    "Taylor-series results are provisional until the source implementation and corresponding raw outputs are located and inspected.",
+    "The spectral calculation is exploratory. The N=320 run was reported to stagnate, and the spectral results are not used as primary verification evidence.",
+    "The exact code revision used for the recorded runs has not yet been established.",
+    "The execution environment and fully reproducible execution instructions have not yet been recorded in this JSON record.",
+    "Independent scientific review has not yet been documented.",
+    "License, attribution details, and AI-assistance disclosure still require confirmation."
+  ],
+  "provenance": {
+    "repository_url": "https://github.com/ccvphysicsresearch-source/computational-result-verification",
+    "code_revision": {
+      "status": "not_yet_confirmed",
+      "note": "The exact commit used to produce the recorded numerical results has not yet been tied to the output files."
+    },
+    "environment": {
+      "status": "not_yet_confirmed",
+      "note": "The exact operating system, GNU Octave or MATLAB version, and relevant package versions for the recorded runs have not been documented here."
+    },
+    "execution_instructions": {
+      "status": "not_yet_confirmed",
+      "note": "Confirm the commands and working directory needed to reproduce the recorded outputs before marking execution instructions as complete."
+    },
+    "license_and_attribution": {
+      "status": "not_yet_confirmed",
+      "note": "Confirm the repository license and attribution requirements for the code and publication materials."
+    },
+    "ai_assistance_disclosure": {
+      "status": "not_yet_confirmed",
+      "note": "Document the role of AI tools in code development, analysis, and preparation of this verification record."
+    }
+  }
+}
