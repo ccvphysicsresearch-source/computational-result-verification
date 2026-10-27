@@ -1,0 +1,47 @@
+﻿name: Verify Shu 1977 numerical result
+
+on:
+  push:
+    paths:
+      - "papers/1977Shu/code/rk45_integrate.m"
+      - "papers/1977Shu/code/shu_odes.m"
+      - "papers/1977Shu/code/test_shu_rk45.m"
+      - ".github/workflows/verify-shu-rk45.yml"
+  pull_request:
+    paths:
+      - "papers/1977Shu/code/rk45_integrate.m"
+      - "papers/1977Shu/code/shu_odes.m"
+      - "papers/1977Shu/code/test_shu_rk45.m"
+      - ".github/workflows/verify-shu-rk45.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-verification:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install GNU Octave
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y octave
+
+      - name: Run Shu RK45 numerical test
+        run: |
+          octave --quiet --no-gui --eval "addpath('papers/1977Shu/code'); test_shu_rk45"
+
+      - name: Check verification report
+        run: |
+          python3 -c "import json; p='papers/1977Shu/results/rk45_verification.json'; d=json.load(open(p, encoding='utf-8')); assert d['status']=='pass', d; print(json.dumps(d, indent=2))"
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shu-1977-rk45-verification
+          path: papers/1977Shu/results/rk45_verification.json
+          if-no-files-found: warn
