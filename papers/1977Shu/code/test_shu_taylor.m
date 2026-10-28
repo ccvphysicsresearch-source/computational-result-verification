@@ -102,17 +102,53 @@ report.finite_values = isfinite(m_t) && isfinite(m_rk);
 report.comparison = ...
     'Endpoint mass comparison; not a comparison of extrapolated m0 values.';
 
-json_file = fullfile(results_dir, 'taylor_verification.json');
-fid = fopen(json_file, 'w');
-if fid == -1
-    error('Cannot write JSON report: %s', json_file);
+
+% Write JSON report using an Octave-compatible writer.
+report_file = fullfile(results_dir, 'taylor_verification.json');
+
+fid = fopen(report_file, 'w');
+if fid < 0
+    error('Could not open JSON report for writing: %s', report_file);
 end
-fwrite(fid, jsonencode(report), 'char');
-fprintf(fid, '\n');
+
+fprintf(fid, '{\n');
+fprintf(fid, '  "test": "%s",\n', report.test);
+fprintf(fid, '  "status": "%s",\n', report.status);
+fprintf(fid, '  "configuration": {\n');
+fprintf(fid, '    "A": %.17g,\n', A);
+fprintf(fid, '    "x_start": %.17g,\n', x_start);
+fprintf(fid, '    "x_end": %.17g,\n', x_end);
+fprintf(fid, '    "Taylor_order": %d,\n', K);
+fprintf(fid, '    "Taylor_tolerance": %.17g,\n', tol);
+fprintf(fid, '    "RK45_RelTol": %.17g,\n', opts.RelTol);
+fprintf(fid, '    "RK45_AbsTol": %.17g,\n', opts.AbsTol);
+fprintf(fid, '    "RK45_MaxStep": %.17g\n', opts.MaxStep);
+fprintf(fid, '  },\n');
+fprintf(fid, '  "result": {\n');
+fprintf(fid, '    "Taylor_endpoint_mass": %.17g,\n', m_t);
+fprintf(fid, '    "RK45_endpoint_mass": %.17g,\n', m_rk);
+fprintf(fid, '    "RK45_extrapolated_m0": %.17g,\n', m0_rk);
+fprintf(fid, '    "Taylor_steps": %d,\n', n_t);
+fprintf(fid, '    "RK45_steps": %d\n', n_rk);
+fprintf(fid, '  },\n');
+fprintf(fid, '  "absolute_error": %.17g,\n', abs_error);
+fprintf(fid, '  "allowed_absolute_error": %.17g,\n', ...
+        allowed_absolute_error);
+fprintf(fid, '  "endpoint": %.17g,\n', x_end);
+
+if report.finite_values
+    fprintf(fid, '  "finite_values": true,\n');
+else
+    fprintf(fid, '  "finite_values": false,\n');
+end
+
+fprintf(fid, '  "comparison": "%s"\n', report.comparison);
+fprintf(fid, '}\n');
+
 fclose(fid);
 
-fprintf('JSON report               : %s\n', json_file);
+fprintf('JSON report               : %s\n', report_file);
 
 if ~passed
-    error('Taylor/RK45 verification failed.');
+    error('Taylor versus RK45 verification FAILED.');
 end
