@@ -1,4 +1,4 @@
-﻿import contextlib
+import contextlib
 import io
 import json
 import shutil
@@ -63,6 +63,56 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
         self.assertEqual(exit_code, 1)
         self.assertIn("VALIDATION FAILED:", output)
         self.assertIn("schema_version", output)
+
+    def test_invalid_scientific_verdict_fails(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["verification"]["scientific_verdict"] = "verified"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("VALIDATION FAILED:", output)
+        self.assertIn("scientific_verdict", output)
+
+    def test_invalid_evidence_status_fails(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["evidence"][0]["status"] = "probably_available"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("VALIDATION FAILED:", output)
+        self.assertIn("status", output)
+
+    def test_unrecognized_top_level_field_fails(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["unrecognized_field"] = "unexpected"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("VALIDATION FAILED:", output)
+        self.assertIn("unrecognized_field", output)
+
+
 
     def test_malformed_json_fails(self):
         self.record_path.write_text(
