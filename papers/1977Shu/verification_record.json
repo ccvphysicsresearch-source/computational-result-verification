@@ -1,12 +1,11 @@
-
 {
   "schema_version": "1.0",
   "record": {
     "id": "shu-1977-self-similar-collapse",
-    "version": "0.3",
+    "version": "0.4",
     "status": "draft",
     "created": "2026-10-21",
-    "updated": "2026-10-27",
+    "updated": "2026-10-28",
     "contributors": {
       "status": "not_reported",
       "note": "Contributor names and roles have not yet been formally recorded."
@@ -36,9 +35,9 @@
     ]
   },
   "verification": {
-    "workflow_stage": "submitted",
+    "workflow_stage": "numerically_cross_checked",
     "scientific_verdict": "partial_numerical_reproduction",
-    "verdict_justification": "For A=2.4, the fixed-step RK4 and adaptive RK45 implementations produce final mass parameters of 1.885209332164 and 1.885209332537, respectively, with a relative difference of approximately 1.98e-10. Their reported profile differences on a common logarithmic grid are also small. This supports strong numerical agreement between the two integrations. However, both methods use the same governing equations and related asymptotic initial assumptions, so the agreement does not establish fully independent verification of the mathematical formulation. Shu's published value of 1.88 is rounded. Taylor-series implementation evidence has not been located in the current repository audit, and the spectral calculation remains exploratory. The overall conclusion is therefore partial numerical reproduction, not complete independent verification.",
+    "verdict_justification": "For A=2.4, fixed-step RK4 and adaptive RK45 report central mass parameters of 1.885209332164 and 1.885209332537, respectively, with a relative difference of approximately 1.98e-10. Their reported profile differences on a common logarithmic grid are small. The higher-order Taylor implementation also passes its automated endpoint-mass comparison against RK45: at x=0.001, the Taylor and RK45 endpoint masses are 1.8852400343916835 and 1.8852400344047633, with absolute difference 1.3079759497713894e-11 against an allowed absolute difference of 1e-8. This endpoint comparison is not a comparison of extrapolated central mass parameters. The RK45 automated test also passes against its configured reference. These results support numerical cross-checking across different integration strategies, but the methods share the governing equations and related asymptotic assumptions. Shu's published mass parameter 1.88 is rounded. The spectral calculation remains exploratory. The overall verdict is partial numerical reproduction, not complete independent scientific verification.",
     "review_scope": {
       "status": "not_yet_confirmed",
       "note": "No independent review scope has been recorded."
@@ -56,7 +55,7 @@
       "independence_assessment": "Provides a fixed-step integration that can be compared with adaptive RK45. It is not mathematically independent of RK45 because both use the same governing equations and related initial asymptotic assumptions.",
       "settings": {
         "parameter_A": 2.4,
-        "step_size": 0.00001,
+        "step_size": 1e-05,
         "x_start": 10.0,
         "x_end": 0.001,
         "integration_method": "Fixed-step RK4"
@@ -126,38 +125,50 @@
     {
       "name": "Higher-order Taylor-series integration",
       "role": "cross_check",
-      "implementation": {
-        "status": "not_yet_confirmed",
-        "note": "Taylor-series source files were not found during the latest repository audit. The reported local comparison results are retained as provisional evidence until the implementation and raw outputs can be located."
-      },
-      "independence_assessment": "A Taylor-series integration can provide a different numerical integration strategy, but the implementation, complete solution path, and correspondence with the reported results have not yet been verified from the current repository contents.",
+      "implementation": "papers/1977Shu/code/shu1977_taylor.m",
+      "independence_assessment": "Uses a different numerical integration strategy from RK45 and provides an automated endpoint-mass cross-check. The methods still share the governing equations and related asymptotic assumptions, so this is numerical cross-checking rather than an independent mathematical formulation.",
       "settings": {
-        "reported_series_order": 16,
-        "reported_interval": "x=2 to x=1.5",
-        "reported_tolerance": 1e-12,
-        "reported_reference_method": "ode45 with RelTol=1e-12 and AbsTol=1e-14"
+        "parameter_A": 2.4,
+        "x_start": 10.0,
+        "x_end": 0.001,
+        "Taylor_order": 30,
+        "Taylor_tolerance": 1e-14,
+        "RK45_relative_tolerance": 1e-11,
+        "RK45_absolute_tolerance": 1e-13,
+        "RK45_maximum_step": 0.005,
+        "test_status": "pass",
+        "comparison_quantity": "Endpoint mass at x=0.001; not extrapolated m0"
       },
       "results": [
         {
-          "quantity": "Maximum scaled difference in v against ode45",
-          "value": 3.585e-14,
-          "source": "derived",
-          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
-          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+          "quantity": "Taylor endpoint mass",
+          "value": 1.8852400343916835,
+          "source": "computed",
+          "comparison_scope": "A=2.4; Taylor integration from x=10 to x=0.001.",
+          "notes": "Reported by papers/1977Shu/results/taylor_verification.json."
         },
         {
-          "quantity": "Maximum scaled difference in alpha against ode45",
-          "value": 5.909e-14,
-          "source": "derived",
-          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
-          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+          "quantity": "RK45 endpoint mass in Taylor comparison",
+          "value": 1.8852400344047633,
+          "source": "computed",
+          "comparison_scope": "A=2.4; RK45 integration from x=10 to x=0.001.",
+          "notes": "This is the endpoint mass, not the extrapolated central mass parameter."
         },
         {
-          "quantity": "Maximum scaled difference in mass against ode45",
-          "value": 1.095e-13,
+          "quantity": "Absolute difference in endpoint mass, Taylor versus RK45",
+          "value": 1.3079759497713894e-11,
           "source": "derived",
-          "comparison_scope": "Reported Taylor-series versus ode45 comparison on x=2 to x=1.5.",
-          "notes": "Provisional: the source implementation and raw output have not yet been located in the current repository audit."
+          "comparison_scope": "Endpoint mass comparison at x=0.001.",
+          "absolute_error": 1.3079759497713894e-11,
+          "tolerance": 1e-08,
+          "notes": "Automated test passed; not a comparison of extrapolated m0 values."
+        },
+        {
+          "quantity": "RK45 extrapolated central mass parameter m0",
+          "value": 1.8852093325372912,
+          "source": "computed",
+          "comparison_scope": "Informational value reported by the Taylor verification test.",
+          "notes": "Not compared with Taylor endpoint mass."
         }
       ]
     },
@@ -245,30 +256,74 @@
       "status": "available"
     },
     {
-      "description": "Taylor-series implementation associated with provisional local comparison results",
+      "description": "Taylor-series implementation",
       "kind": "source_code",
-      "location": {
-        "status": "not_yet_confirmed",
-        "note": "Taylor-series source files were not found during the latest repository audit."
-      },
-      "status": "not_yet_confirmed"
+      "location": "papers/1977Shu/code/shu1977_taylor.m",
+      "status": "available"
     },
     {
       "description": "Original publication and its Table 1 reference value",
       "kind": "reference_data",
       "location": "https://doi.org/10.1086/155274",
       "status": "available"
+    },
+    {
+      "description": "Taylor-series coefficient generator",
+      "kind": "source_code",
+      "location": "papers/1977Shu/code/shu_tay_coeffs.m",
+      "status": "available",
+      "code_revision": "ca323d6"
+    },
+    {
+      "description": "Taylor-series critical-point expansion",
+      "kind": "source_code",
+      "location": "papers/1977Shu/code/shu_tay_crit.m",
+      "status": "available",
+      "code_revision": "ca323d6"
+    },
+    {
+      "description": "Taylor-series marching implementation",
+      "kind": "source_code",
+      "location": "papers/1977Shu/code/shu_tay_march.m",
+      "status": "available",
+      "code_revision": "ca323d6"
+    },
+    {
+      "description": "Automated Taylor versus RK45 test",
+      "kind": "test",
+      "location": "papers/1977Shu/code/test_shu_taylor.m",
+      "status": "available",
+      "code_revision": "ca323d6"
+    },
+    {
+      "description": "Taylor verification JSON result; test status pass",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/taylor_verification.json",
+      "status": "available"
+    },
+    {
+      "description": "RK45 verification JSON result; test status pass",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/rk45_verification.json",
+      "status": "available"
+    },
+    {
+      "description": "Taylor verification GitHub Actions workflow; latest reported successful run is associated with commit ca323d6",
+      "kind": "test",
+      "location": ".github/workflows/verify-shu-taylor.yml",
+      "status": "available",
+      "code_revision": "ca323d6"
     }
   ],
   "limitations": [
     "The primary quantitative cross-check compares two integration methods using the same governing equations and related initial asymptotic assumptions; it is not a fully independent mathematical verification.",
     "The published mass parameter 1.88 is rounded to two decimal places and is not a high-precision numerical benchmark.",
-    "Taylor-series results are provisional until the source implementation and corresponding raw outputs are located and inspected.",
     "The spectral calculation is exploratory. The N=320 run was reported to stagnate, and the spectral results are not used as primary verification evidence.",
     "The exact code revision used for the recorded runs has not yet been established.",
     "The execution environment and fully reproducible execution instructions have not yet been recorded in this JSON record.",
     "Independent scientific review has not yet been documented.",
-    "License, attribution details, and AI-assistance disclosure still require confirmation."
+    "License, attribution details, and AI-assistance disclosure still require confirmation.",
+    "Taylor versus RK45 agreement is an endpoint-mass comparison at x=0.001; it must not be interpreted as a direct comparison of extrapolated central mass parameters."
   ],
   "provenance": {
     "repository_url": "https://github.com/ccvphysicsresearch-source/computational-result-verification",
