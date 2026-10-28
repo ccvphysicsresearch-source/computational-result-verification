@@ -1,0 +1,51 @@
+﻿name: Shu Taylor Verification
+
+on:
+  push:
+    paths:
+      - 'papers/1977Shu/code/shu1977_taylor.m'
+      - 'papers/1977Shu/code/shu_tay_coeffs.m'
+      - 'papers/1977Shu/code/shu_tay_crit.m'
+      - 'papers/1977Shu/code/shu_tay_march.m'
+      - 'papers/1977Shu/code/rk45_integrate.m'
+      - 'papers/1977Shu/code/shu_odes.m'
+      - 'papers/1977Shu/code/test_shu_taylor.m'
+      - '.github/workflows/verify-shu-taylor.yml'
+  pull_request:
+    paths:
+      - 'papers/1977Shu/code/shu1977_taylor.m'
+      - 'papers/1977Shu/code/shu_tay_coeffs.m'
+      - 'papers/1977Shu/code/shu_tay_crit.m'
+      - 'papers/1977Shu/code/shu_tay_march.m'
+      - 'papers/1977Shu/code/rk45_integrate.m'
+      - 'papers/1977Shu/code/shu_odes.m'
+      - 'papers/1977Shu/code/test_shu_taylor.m'
+      - '.github/workflows/verify-shu-taylor.yml'
+  workflow_dispatch:
+
+jobs:
+  verify-taylor:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install GNU Octave
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y octave
+
+      - name: Run Taylor vs RK45 verification
+        run: |
+          octave --quiet --no-gui --eval "addpath('papers/1977Shu/code'); test_shu_taylor"
+
+      - name: Validate JSON report
+        run: |
+          python3 -c "import json; from pathlib import Path; p=Path('papers/1977Shu/results/taylor_verification.json'); d=json.loads(p.read_text()); assert d.get('status') == 'pass', f'Verification failed: {d}'; print('Taylor JSON report: PASS')"
+
+      - name: Upload verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: shu-1977-taylor-verification
+          path: papers/1977Shu/results/taylor_verification.json
+          if-no-files-found: error
