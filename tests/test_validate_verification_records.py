@@ -1,4 +1,4 @@
-import contextlib
+﻿import contextlib
 import io
 import json
 import shutil
@@ -91,7 +91,6 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
         )
 
         exit_code, output = self.run_validator()
-
         self.assertEqual(exit_code, 1)
         self.assertIn("VALIDATION FAILED:", output)
         self.assertIn("status", output)
@@ -111,6 +110,81 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
         self.assertEqual(exit_code, 1)
         self.assertIn("VALIDATION FAILED:", output)
         self.assertIn("unrecognized_field", output)
+
+
+    def test_absolute_error_exceeding_tolerance_fails(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        result = record["methods"][0]["results"][0]
+        result["absolute_error"] = 0.02
+        result["tolerance"] = 0.01
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("absolute_error", output)
+        self.assertIn("exceeds tolerance", output)
+
+    def test_absolute_error_equal_to_tolerance_passes(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        result = record["methods"][0]["results"][0]
+        result["absolute_error"] = 0.01
+        result["tolerance"] = 0.01
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 0, output)
+
+    def test_independent_review_without_review_details_fails(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["verification"]["workflow_stage"] = (
+            "independently_reviewed"
+        )
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("record.reviewers", output)
+        self.assertIn("verification.review_scope", output)
+        self.assertIn("verification.review_date", output)
+
+    def test_independent_review_with_details_passes(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["verification"]["workflow_stage"] = (
+            "independently_reviewed"
+        )
+        record["record"]["reviewers"] = "Independent Reviewer 1"
+        record["verification"]["review_scope"] = (
+            "Independent review of methods and numerical evidence."
+        )
+        record["verification"]["review_date"] = "2026-10-29"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 0, output)
 
 
 
