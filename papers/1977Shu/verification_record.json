@@ -2,10 +2,10 @@
   "schema_version": "1.0",
   "record": {
     "id": "shu-1977-self-similar-collapse",
-    "version": "0.4",
+    "version": "0.5",
     "status": "draft",
     "created": "2026-10-21",
-    "updated": "2026-10-28",
+    "updated": "2026-10-30",
     "contributors": {
       "status": "not_reported",
       "note": "Contributor names and roles have not yet been formally recorded."
@@ -313,6 +313,12 @@
       "location": ".github/workflows/verify-shu-taylor.yml",
       "status": "available",
       "code_revision": "ca323d6"
+    },
+    {
+      "description": "Instructions for reproducing the Taylor-versus-RK45 endpoint-mass test",
+      "kind": "report",
+      "location": "papers/1977Shu/REPRODUCIBILITY.md",
+      "status": "available"
     }
   ],
   "limitations": [
@@ -320,7 +326,7 @@
     "The published mass parameter 1.88 is rounded to two decimal places and is not a high-precision numerical benchmark.",
     "The spectral calculation is exploratory. The N=320 run was reported to stagnate, and the spectral results are not used as primary verification evidence.",
     "The exact code revision used for the recorded runs has not yet been established.",
-    "The execution environment and fully reproducible execution instructions have not yet been recorded in this JSON record.",
+    "The Taylor-versus-RK45 test instructions and GNU Octave 10.3.0 test environment are documented, but the exact environment and execution history for all historical numerical results have not been confirmed.",
     "Independent scientific review has not yet been documented.",
     "License, attribution details, and AI-assistance disclosure still require confirmation.",
     "Taylor versus RK45 agreement is an endpoint-mass comparison at x=0.001; it must not be interpreted as a direct comparison of extrapolated central mass parameters."
@@ -333,12 +339,9 @@
     },
     "environment": {
       "status": "not_yet_confirmed",
-      "note": "The exact operating system, GNU Octave or MATLAB version, and relevant package versions for the recorded runs have not been documented here."
+      "note": "GNU Octave 10.3.0 was confirmed for the Taylor-versus-RK45 endpoint-mass test. The operating system and environment for all historical RK4/RK45 runs have not been established."
     },
-    "execution_instructions": {
-      "status": "not_yet_confirmed",
-      "note": "Confirm the commands and working directory needed to reproduce the recorded outputs before marking execution instructions as complete."
-    },
+    "execution_instructions": "See papers/1977Shu/REPRODUCIBILITY.md for the Taylor-versus-RK45 test instructions. The test was run successfully with GNU Octave 10.3.0; commands and environment for all historical results are not yet fully established.",
     "license_and_attribution": {
       "status": "not_yet_confirmed",
       "note": "Confirm the repository license and attribution requirements for the code and publication materials."
