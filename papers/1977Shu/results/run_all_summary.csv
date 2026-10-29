@@ -1,0 +1,6 @@
+method,A,settings,m0,status,details
+RK4,2.4000,"h=1.0e-05; x=1.0e+01 to 1.0e-03",1.885209332164,success,"points=999901"
+RK45,2.4000,"RelTol=1e-11; AbsTol=1e-13; MaxStep=0.005",1.885209332537,success,"points=9269"
+Spectral_N240,2.4000,"N=240; xmin=1e-6; xmax=40",1.885166801206,converged,"residual_norm=9.160037e-03; max_abs_residual=8.981537e-03"
+Spectral_N240,2.4000,"N=240; xmin=1e-6; xmax=40",1.885166801206,converged,"residual_norm=9.160037e-03; max_abs_residual=8.981537e-03"
+Spectral_N320,2.4000,"N=320; xmin=1e-6; xmax=40",1.885166800847,stagnated,"residual_norm=1.136518e-03; max_abs_residual=7.090569e-04"

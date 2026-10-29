@@ -1,0 +1,26 @@
+{
+  "test": "shu1977_taylor_vs_rk45_A2.4",
+  "status": "pass",
+  "configuration": {
+    "A": 2.3999999999999999,
+    "x_start": 10,
+    "x_end": 0.001,
+    "Taylor_order": 30,
+    "Taylor_tolerance": 1e-14,
+    "RK45_RelTol": 9.9999999999999994e-12,
+    "RK45_AbsTol": 1e-13,
+    "RK45_MaxStep": 0.0050000000000000001
+  },
+  "result": {
+    "Taylor_endpoint_mass": 1.8852400343916835,
+    "RK45_endpoint_mass": 1.8852400344047633,
+    "RK45_extrapolated_m0": 1.8852093325372912,
+    "Taylor_steps": 26,
+    "RK45_steps": 9268
+  },
+  "absolute_error": 1.3079759497713894e-11,
+  "allowed_absolute_error": 1e-08,
+  "endpoint": 0.001,
+  "finite_values": true,
+  "comparison": "Endpoint mass comparison; not a comparison of extrapolated m0 values."
+}

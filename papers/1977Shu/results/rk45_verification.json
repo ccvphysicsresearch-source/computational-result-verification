@@ -1,0 +1,19 @@
+{
+  "test": "shu1977_rk45_A2.4",
+  "status": "pass",
+  "configuration": {
+    "A": 2.3999999999999999,
+    "x_start": 10,
+    "x_end": 0.001,
+    "RelTol": 9.9999999999999994e-12,
+    "AbsTol": 1e-13,
+    "MaxStep": 0.0050000000000000001
+  },
+  "reference": {"m0": 1.8852093325370001},
+  "result": {"m0": 1.8852093325372912},
+  "absolute_error": 2.9110047705671604e-13,
+  "allowed_absolute_error": 1e-08,
+  "endpoint": {"actual": 0.001, "ok": true},
+  "finite_values": true,
+  "integration_points": 9269
+}

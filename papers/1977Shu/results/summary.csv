@@ -1,0 +1,12 @@
+method,A,resolution_or_settings,m0,solver_status,metric,metric_value,notes
+RK4,2.4,"h=1e-5; x=10 to 1e-3",1.8852093322,success,m0,1.8852093322,"Classical fixed-step RK4 integration"
+RK45,2.4,"RelTol=1e-11; AbsTol=1e-13; MaxStep=0.005; x=10 to 1e-3",1.8852093325,success,m0,1.8852093325,"Adaptive RK45 integration"
+RK4_vs_RK45,2.4,"Common logarithmic grid; pchip interpolation",,comparison,max_relative_alpha_difference,1.188383e-08,"Same governing equations and initial asymptotic conditions"
+RK4_vs_RK45,2.4,"Common logarithmic grid; pchip interpolation",,comparison,max_relative_v_difference,2.026988e-09,"Same governing equations and initial asymptotic conditions"
+Spectral,2.4,"N=240; x_min=1e-6; x_max=40",1.8851668012,converged,scaled_relative_residual,1.71e-11,"Unscaled residual norm=9.160037e-03; condest(J)=2.9398e6"
+Spectral_vs_RK45,2.4,"N=240; common logarithmic grid; pchip interpolation",,comparison,max_relative_alpha_difference,5.078862e-05,"Comparison over x=1e-3 to 10"
+Spectral_vs_RK45,2.4,"N=240; common logarithmic grid; pchip interpolation",,comparison,max_relative_v_difference,9.009036e-05,"Comparison over x=1e-3 to 10"
+Spectral,2.4,"N=320; x_min=1e-6; x_max=40",1.8851668008,stagnated,scaled_relative_residual,6.7088e-08,"Solver stagnated; candidate result only; do not classify as converged"
+Spectral_N240_vs_N320,2.4,"Common grid; pchip interpolation",,comparison,max_relative_alpha_difference,5.699543e-05,"N=320 candidate profile compared with converged N=240 profile"
+Spectral_N240_vs_N320,2.4,"Common grid; pchip interpolation",,comparison,max_relative_v_difference,6.866859e-05,"N=320 candidate profile compared with converged N=240 profile"
+Reference_Table_1,2.4,"Shu 1977; Table 1",1.88,reported_value,absolute_difference_spectral_N240,0.0051668012,"Published value is rounded to two decimal places"
