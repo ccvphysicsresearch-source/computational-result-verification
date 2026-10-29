@@ -6,12 +6,14 @@ on:
       - "schemas/**"
       - "papers/**/verification_record.json"
       - "scripts/validate_verification_records.py"
+      - "tests/**"
       - ".github/workflows/validate-records.yml"
   pull_request:
     paths:
       - "schemas/**"
       - "papers/**/verification_record.json"
       - "scripts/validate_verification_records.py"
+      - "tests/**"
       - ".github/workflows/validate-records.yml"
   workflow_dispatch:
 
