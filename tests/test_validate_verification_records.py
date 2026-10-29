@@ -16,6 +16,7 @@ REAL_RECORD = REPO_ROOT / "papers" / "1977Shu" / "verification_record.json"
 
 
 class ValidateVerificationRecordsTests(unittest.TestCase):
+
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.root = Path(self.temp_dir.name)
@@ -35,7 +36,31 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["evidence"] = [
+            {
+                "description": "Test evidence",
+                "kind": "raw_output",
+                "location": "test_evidence.txt",
+                "status": "available",
+            }
+        ]
+
+        (self.root / "test_evidence.txt").write_text(
+            "Test evidence",
+            encoding="utf-8",
+        )
+
+        self.record_path.write_text(
+            json.dumps(record),
+            encoding="utf-8",
+        )
+
+
     def tearDown(self):
+
         self.temp_dir.cleanup()
 
     def run_validator(self):
@@ -186,6 +211,58 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 0, output)
 
+    def check_evidence(self, location, status="available"):
+        record = {
+            "evidence": [
+                {
+                    "description": "Test evidence",
+                    "kind": "raw_output",
+                    "location": location,
+                    "status": status,
+                }
+            ]
+        }
+        return validator.check_evidence_locations(record, self.root)
+
+    def test_existing_evidence_file_passes(self):
+        evidence_file = self.root / "evidence.txt"
+        evidence_file.write_text("test evidence", encoding="utf-8")
+
+        errors = self.check_evidence("evidence.txt")
+
+        self.assertEqual(errors, [])
+
+    def test_missing_available_evidence_fails(self):
+        errors = self.check_evidence("missing.txt")
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn("does not exist", errors[0])
+
+    def test_external_https_url_passes(self):
+        errors = self.check_evidence(
+            "https://doi.org/10.1086/155274"
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_path_traversal_fails(self):
+        errors = self.check_evidence("../outside.txt")
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn("escapes the repository", errors[0])
+
+    def test_non_available_evidence_does_not_require_file(self):
+        for status in (
+            "not_yet_confirmed",
+            "unavailable",
+            "not_applicable",
+        ):
+            with self.subTest(status=status):
+                errors = self.check_evidence(
+                    "missing.txt",
+                    status=status,
+                )
+                self.assertEqual(errors, [])
 
 
     def test_malformed_json_fails(self):
