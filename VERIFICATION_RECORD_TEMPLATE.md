@@ -38,9 +38,17 @@ A missing or unresolved essential piece of evidence must not be concealed by ass
 ## 1. Record Identity
 
 * **Record ID:**
-* **Record status:** Draft / Under Review / Verified / Archived
+* **Record status:** `draft` / `submitted` / `archived`
+* **Technical workflow stage:** `submitted` / `execution_checked` / `numerically_cross_checked` / `independently_reviewed`
 
-Record status describes the workflow or review stage; it is separate from the verification verdict. For example, a record may be `Under Review` while its current verdict is `INCONCLUSIVE`. Use `Verified` only when the record has met the project's review requirements.
+Record status describes the administrative state of the record. It is separate from technical verification progress and the scientific verdict.
+
+Use:
+- `draft` — The record is being prepared or revised.
+- `submitted` — The record has been formally submitted.
+- `archived` — The record is retained for reference but is no longer actively maintained.
+
+Technical verification progress is recorded separately in `verification.workflow_stage`.
 * **Record version:**
 * **Date created:**
 * **Date last updated:**

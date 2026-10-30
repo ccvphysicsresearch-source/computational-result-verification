@@ -68,13 +68,41 @@ class ValidateVerificationRecordsTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             exit_code = validator.main()
         return exit_code, output.getvalue()
-
     def test_valid_record_passes(self):
         exit_code, output = self.run_validator()
 
         self.assertEqual(exit_code, 0)
         self.assertIn("VALIDATION PASSED: 1 record(s).", output)
         self.assertIn("PASS:", output)
+
+    def test_archived_record_status_passes(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["record"]["status"] = "archived"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 0, output)
+
+    def test_workflow_stage_is_invalid_record_status(self):
+        record = json.loads(
+            self.record_path.read_text(encoding="utf-8")
+        )
+        record["record"]["status"] = "numerically_cross_checked"
+
+        self.record_path.write_text(
+            json.dumps(record), encoding="utf-8"
+        )
+
+        exit_code, output = self.run_validator()
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("record.status", output)
 
     def test_missing_required_field_fails(self):
         record = json.loads(self.record_path.read_text(encoding="utf-8"))
