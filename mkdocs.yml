@@ -2,8 +2,8 @@ site_name: Scientific Reproducibility
 site_description: An open platform for reproducing and independently verifying scientific results.
 site_url: ""
 
-repo_url: https://github.com/ccvphysicsresearch-source/scientific-reproducibility
-repo_name: scientific-reproducibility
+repo_url: https://github.com/ccvphysicsresearch-source/computational-result-verification
+repo_name: computational-result-verification
 
 theme:
   name: material
@@ -27,6 +27,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Platform Blueprint: platform-blueprint.md
   - Verification Protocol: protocol.md
   - Benchmarks:
       - Shu (1977): shu1977.md
