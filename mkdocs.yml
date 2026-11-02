@@ -29,6 +29,7 @@ nav:
   - Home: index.md
   - Platform Blueprint: platform-blueprint.md
   - Verification Protocol: protocol.md
+  - Validation Guide: validation-guide.md
   - Benchmarks:
       - Shu (1977): shu1977.md
   - Contribute: contribute.md
