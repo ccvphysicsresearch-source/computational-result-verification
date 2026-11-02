@@ -1,0 +1,245 @@
+{
+  "schema_version": "2.0",
+  "record": {
+    "id": "shu-1977-self-similar-collapse",
+    "version": "2.0",
+    "status": "draft",
+    "workflow_stage": "numerically_cross_checked",
+    "created": "2026-11-02",
+    "updated": "2026-11-02",
+    "contributors": [
+      {
+        "identity": "contributor-1",
+        "display_name": {
+          "status": "not_yet_confirmed",
+          "note": "The contributor display name has not been formally recorded in this record."
+        },
+        "role": "reproduction contributor"
+      }
+    ]
+  },
+  "publication": {
+    "title": "Self-Similar Collapse of Isothermal Spheres and Star Formation",
+    "authors": "F. H. Shu",
+    "year": 1977,
+    "venue": "The Astrophysical Journal, 214, 488–497",
+    "doi": "10.1086/155274",
+    "publication_url": "https://doi.org/10.1086/155274",
+    "published_code_or_data_url": {
+      "status": "not_reported",
+      "note": "No publication-associated source-code or numerical-data archive is confirmed in the current project evidence."
+    }
+  },
+  "computational_result": {
+    "id": "shu-1977-collapse-A2.4-endpoint-mass",
+    "title": "Numerical integration of the A=2.4 isothermal-sphere collapse solution",
+    "description": "A partial numerical reproduction and cross-check of the similarity solution described by Shu (1977), focused here on agreement between higher-order Taylor-series integration and adaptive RK45 for the dimensionless enclosed mass at x=0.001.",
+    "research_question": "Do the Taylor-series and RK45 implementations produce endpoint masses agreeing within the test's configured absolute tolerance for A=2.4?",
+    "scientific_field": "Astrophysical fluid dynamics; self-similar gravitational collapse",
+    "status": "partially_verified",
+    "status_rationale": "The automated Taylor-versus-RK45 endpoint-mass test passes. This is a numerical cross-check, not a complete reproduction or independent validation of the governing equations, assumptions, or the paper's full results."
+  },
+  "numerical_targets": [
+    {
+      "id": "NT-001",
+      "title": "Endpoint dimensionless enclosed mass at x=0.001",
+      "description": "Agreement of the Taylor-series and RK45 computed values of m(x) at the common integration endpoint.",
+      "scope": "A=2.4; inward integration from x=10 to x=0.001 using the documented asymptotic initial conditions.",
+      "quantity": "Dimensionless enclosed mass m(x=0.001)",
+      "unit": "dimensionless",
+      "verification_completeness": "substantially_complete",
+      "scientific_agreement": "agreement_with_limitations",
+      "acceptance_criteria": [],
+      "implementation_ids": [
+        "IMPL-TAYLOR",
+        "IMPL-RK45"
+      ],
+      "execution_ids": [],
+      "evidence_ids": [
+        "EV-TAYLOR-JSON",
+        "EV-RK45-JSON",
+        "EV-REPRO-GUIDE"
+      ],
+      "assessment_ids": [],
+      "notes": "Taylor result 1.8852400343916835; RK45 result 1.8852400344047633; absolute difference 1.3079759497713894e-11; configured allowed absolute difference 1e-8; automated test status pass. The tolerance is documented, but when it was established relative to the comparison has not been independently recorded. These are endpoint masses, not extrapolated central mass m0 values."
+    }
+  ],
+  "reference_datasets": [],
+  "implementations": [
+    {
+      "id": "IMPL-TAYLOR",
+      "name": "Higher-order Taylor-series integration",
+      "role": "primary_reproduction",
+      "target_ids": [
+        "NT-001"
+      ],
+      "description": "Local higher-order Taylor-series integration used to compute the A=2.4 collapse solution from x=10 to x=0.001.",
+      "independence": {
+        "classification": "partially_independent",
+        "explanation": "The integration algorithm differs from RK45, but both implementations solve the same similarity equations and use the same asymptotic initial conditions.",
+        "shared_components": [
+          "Governing similarity equations",
+          "Asymptotic initial conditions",
+          "Endpoint mass definition"
+        ]
+      },
+      "repository": "https://github.com/ccvphysicsresearch-source/computational-result-verification",
+      "source_paths": [
+        "papers/1977Shu/code/shu1977_taylor.m",
+        "papers/1977Shu/code/shu_tay_march.m",
+        "papers/1977Shu/code/shu_tay_coeffs.m",
+        "papers/1977Shu/code/shu_tay_crit.m",
+        "papers/1977Shu/code/test_shu_taylor.m"
+      ],
+      "revision": {
+        "status": "not_yet_confirmed",
+        "note": "The Taylor verification workflow references commit ca323d6 for relevant source/test files, but the exact revision used to generate the archived JSON output has not been conclusively tied to that output."
+      },
+      "language": "GNU Octave / MATLAB-compatible M-files",
+      "method_description": "Higher-order Taylor-series marching; order 30 and tolerance 1e-14 in the recorded comparison.",
+      "license_and_attribution": {
+        "status": "not_yet_confirmed",
+        "note": "Repository license and attribution requirements have not yet been confirmed."
+      },
+      "ai_assistance_disclosure": {
+        "status": "not_yet_confirmed",
+        "note": "The role of AI assistance in developing and reviewing this implementation has not yet been documented."
+      }
+    },
+    {
+      "id": "IMPL-RK45",
+      "name": "Adaptive Runge–Kutta integration (ode45 / RK45)",
+      "role": "cross_check",
+      "target_ids": [
+        "NT-001"
+      ],
+      "description": "Adaptive ode45 integration used as the comparison implementation for the endpoint-mass test.",
+      "independence": {
+        "classification": "partially_independent",
+        "explanation": "The adaptive Runge–Kutta algorithm differs from the Taylor-series method, but the governing equations and asymptotic initial conditions are shared.",
+        "shared_components": [
+          "Governing similarity equations",
+          "Asymptotic initial conditions",
+          "Endpoint mass definition"
+        ]
+      },
+      "repository": "https://github.com/ccvphysicsresearch-source/computational-result-verification",
+      "source_paths": [
+        "papers/1977Shu/code/rk45_integrate.m"
+      ],
+      "revision": {
+        "status": "not_yet_confirmed",
+        "note": "The exact source revision used for the archived comparison output has not been established."
+      },
+      "language": "GNU Octave / MATLAB-compatible M-files",
+      "method_description": "Adaptive ode45 integration with relative tolerance 1e-11, absolute tolerance 1e-13, and maximum step 0.005.",
+      "license_and_attribution": {
+        "status": "not_yet_confirmed",
+        "note": "Repository license and attribution requirements have not yet been confirmed."
+      },
+      "ai_assistance_disclosure": {
+        "status": "not_yet_confirmed",
+        "note": "The role of AI assistance in developing and reviewing this implementation has not yet been documented."
+      }
+    }
+  ],
+  "executions": [],
+  "evidence": [
+    {
+      "id": "EV-TAYLOR-JSON",
+      "description": "Machine-readable result of the automated Taylor-versus-RK45 endpoint-mass test; status pass.",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/taylor_verification.json",
+      "status": "available",
+      "target_ids": [
+        "NT-001"
+      ],
+      "implementation_id": "IMPL-TAYLOR",
+      "metadata": {
+        "test": "shu1977_taylor_vs_rk45_A2.4",
+        "configuration": {
+          "A": 2.4,
+          "x_start": 10,
+          "x_end": 0.001,
+          "Taylor_order": 30,
+          "Taylor_tolerance": 1e-14,
+          "RK45_RelTol": 1e-11,
+          "RK45_AbsTol": 1e-13,
+          "RK45_MaxStep": 0.005
+        },
+        "Taylor_endpoint_mass": 1.8852400343916835,
+        "RK45_endpoint_mass": 1.8852400344047633,
+        "absolute_error": 1.3079759497713894e-11,
+        "allowed_absolute_error": 1e-8,
+        "comparison_scope": "Endpoint mass at x=0.001; not extrapolated m0."
+      }
+    },
+    {
+      "id": "EV-RK45-JSON",
+      "description": "Machine-readable RK45 verification output, including its configured reference comparison.",
+      "kind": "raw_output",
+      "location": "papers/1977Shu/results/rk45_verification.json",
+      "status": "available",
+      "target_ids": [
+        "NT-001"
+      ],
+      "implementation_id": "IMPL-RK45",
+      "metadata": {
+        "test": "shu1977_rk45_A2.4",
+        "status": "pass",
+        "m0": 1.8852093325372912,
+        "absolute_error_against_configured_reference": 2.9110047705671604e-13,
+        "allowed_absolute_error": 1e-8,
+        "note": "This is an extrapolated central mass parameter check, not the Taylor-versus-RK45 endpoint-mass comparison."
+      }
+    },
+    {
+      "id": "EV-REPRO-GUIDE",
+      "description": "Reproducibility instructions and parameter specification for the Taylor-versus-RK45 test.",
+      "kind": "report",
+      "location": "papers/1977Shu/REPRODUCIBILITY.md",
+      "status": "available",
+      "target_ids": [
+        "NT-001"
+      ],
+      "implementation_id": "IMPL-TAYLOR"
+    },
+    {
+      "id": "EV-REPORT",
+      "description": "Project numerical reproduction report describing method comparisons and scope limitations.",
+      "kind": "report",
+      "location": "papers/1977Shu/REPORT.md",
+      "status": "available",
+      "target_ids": [
+        "NT-001"
+      ]
+    }
+  ],
+  "assessments": [],
+  "limitations": [
+    "This record covers only the Taylor-versus-RK45 endpoint-mass comparison for A=2.4 at x=0.001.",
+    "The two methods share the governing similarity equations, asymptotic initial conditions, and endpoint mass definition; their agreement is not a fully independent mathematical verification.",
+    "The comparison does not compare extrapolated central mass m0 values between Taylor and RK45.",
+    "The published Table 1 value m0=1.88 is rounded and is not a high-precision benchmark for the endpoint mass target; it is therefore not attached as a reference dataset to NT-001.",
+    "The exact code revision associated with the archived numerical output has not been confirmed.",
+    "The reproducibility guide records GNU Octave 10.3.0 for the test, but the operating system and exact execution timestamp are not established in the available output record.",
+    "No formal independent scientific assessment has been recorded.",
+    "The RK4-versus-RK45 central-mass and profile comparisons, and the exploratory spectral calculations, are not included as targets in this first minimal v2 example."
+  ],
+  "provenance": {
+    "repository_url": "https://github.com/ccvphysicsresearch-source/computational-result-verification",
+    "record_revision": {
+      "status": "not_yet_confirmed",
+      "note": "This is the initial v2 draft; its commit will identify the record revision after publication to the platform-blueprint branch."
+    },
+    "license_and_attribution": {
+      "status": "not_yet_confirmed",
+      "note": "Confirm the repository license and any required attribution before publishing the record."
+    },
+    "ai_assistance_disclosure": {
+      "status": "not_yet_confirmed",
+      "note": "Document AI assistance used in preparing the record and any related code or analysis."
+    },
+    "created_with": "Prepared as a draft from the Shu (1977) project files and archived verification outputs."
+  }
+}
